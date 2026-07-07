@@ -55,7 +55,7 @@
 
         <!-- Monthly Data Entries -->
         <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5">
-          <h3 class="text-sm font-semibold text-gray-900 dark:text-white mb-4">{{ locale === 'de' ? 'Monatliche Einträge' : 'Monthly Entries' }}</h3>
+          <h3 class="text-sm font-semibold text-gray-900 dark:text-white mb-4">{{ $t('dashboard.monthly_entries') }}</h3>
           <div v-if="monthlyTotals.length">
             <Bar :data="monthlyChartData" :options="barOptions" />
           </div>
@@ -82,7 +82,7 @@
         <!-- Top KPIs -->
         <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
           <div class="p-4 border-b border-gray-200 dark:border-gray-700">
-            <h3 class="text-sm font-semibold text-gray-900 dark:text-white">{{ locale === 'de' ? 'Wichtigste KPIs' : 'Top KPIs' }}</h3>
+            <h3 class="text-sm font-semibold text-gray-900 dark:text-white">{{ $t('dashboard.top_kpis') }}</h3>
           </div>
           <div v-if="topKpis.length" class="divide-y divide-gray-100 dark:divide-gray-700/50">
             <a
@@ -115,7 +115,7 @@
         <!-- Recent Values -->
         <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
           <div class="p-4 border-b border-gray-200 dark:border-gray-700">
-            <h3 class="text-sm font-semibold text-gray-900 dark:text-white">{{ locale === 'de' ? 'Letzte Einträge' : 'Recent Entries' }}</h3>
+            <h3 class="text-sm font-semibold text-gray-900 dark:text-white">{{ $t('dashboard.recent_entries') }}</h3>
           </div>
           <div v-if="recentValues.length" class="divide-y divide-gray-100 dark:divide-gray-700/50">
             <a
@@ -194,7 +194,7 @@ const monthlyChartData = computed(() => {
   return {
     labels,
     datasets: [{
-      label: locale.value === 'de' ? 'Einträge' : 'Entries',
+      label: t('dashboard.entries'),
       data,
       backgroundColor: '#2563eb',
       borderRadius: 4,

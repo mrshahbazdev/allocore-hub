@@ -82,7 +82,7 @@
 
           <!-- CSV Import -->
           <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-            <h4 class="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-2">CSV Import</h4>
+            <h4 class="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-2">{{ $t('kpi.csv_import') }}</h4>
             <form @submit.prevent="submitImport">
               <input
                 ref="csvInput"
@@ -91,14 +91,14 @@
                 @change="csvFile = $event.target.files[0]"
                 class="w-full text-xs text-gray-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:bg-gray-100 file:text-gray-700 dark:file:bg-gray-700 dark:file:text-gray-300"
               />
-              <p class="text-[10px] text-gray-400 mt-1">Format: date, value, notes</p>
+              <p class="text-[10px] text-gray-400 mt-1">{{ $t('kpi.csv_format_hint') }}</p>
               <button
                 v-if="csvFile"
                 type="submit"
                 :disabled="importForm.processing"
                 class="mt-2 w-full px-3 py-1.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 disabled:opacity-50"
               >
-                {{ importForm.processing ? '...' : 'Import CSV' }}
+                {{ importForm.processing ? '...' : $t('kpi.import_csv') }}
               </button>
             </form>
           </div>
@@ -200,7 +200,7 @@ const trendChartData = computed(() => {
   return {
     labels: sorted.map(v => v.recorded_at),
     datasets: [{
-      label: locale.value === 'de' ? 'Wert' : 'Value',
+      label: t('kpi.value'),
       data: sorted.map(v => v.value),
       borderColor: '#2563eb',
       backgroundColor: 'rgba(37, 99, 235, 0.1)',
