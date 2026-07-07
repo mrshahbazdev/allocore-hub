@@ -1,7 +1,7 @@
 import '../css/app.css';
 import './bootstrap';
 
-import { createInertiaApp } from '@inertiajs/vue3';
+import { createInertiaApp, router } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createApp, h } from 'vue';
 import { ZiggyVue } from '../../vendor/tightenco/ziggy';
@@ -21,6 +21,19 @@ createInertiaApp({
         app.use(plugin);
         app.use(ZiggyVue);
         app.use(i18n);
+
+        const serverLocale = props.initialPage.props.locale;
+        if (serverLocale) {
+            i18n.global.locale.value = serverLocale;
+        }
+
+        router.on('navigate', (event) => {
+            const newLocale = event.detail.page.props.locale;
+            if (newLocale) {
+                i18n.global.locale.value = newLocale;
+            }
+        });
+
         app.mount(el);
     },
     progress: {

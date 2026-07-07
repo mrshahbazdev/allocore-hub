@@ -22,7 +22,7 @@
             :href="`/kpis/spreadsheet/export?year=${filterYear}`"
             class="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 text-sm font-medium rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
           >
-            CSV Export
+            {{ $t('kpi.csv_export') }}
           </a>
           <button
             @click="showTargetGenerator = true"
