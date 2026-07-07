@@ -4,8 +4,8 @@
       <!-- Header -->
       <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ $t('kpi.spreadsheet') }}</h1>
-          <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+          <h1 class="text-2xl font-bold text-gray-900">{{ $t('kpi.spreadsheet') }}</h1>
+          <p class="text-sm text-gray-500 mt-1">
             {{ $t('kpi.spreadsheet_desc') }}
           </p>
         </div>
@@ -18,6 +18,12 @@
           >
             {{ saving ? $t('common.saving') : $t('common.save_all') }}
           </button>
+          <a
+            :href="`/kpis/spreadsheet/export?year=${filterYear}`"
+            class="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 text-sm font-medium rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+          >
+            CSV Export
+          </a>
           <button
             @click="showTargetGenerator = true"
             class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium rounded-lg transition-colors"
@@ -28,18 +34,18 @@
       </div>
 
       <!-- Filters -->
-      <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
+      <div class="bg-white rounded-xl border border-gray-200 p-4">
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <select
             v-model="filterYear"
-            class="rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white text-sm"
+            class="rounded-lg border-gray-300 text-sm"
             @change="applyFilters"
           >
             <option v-for="y in availableYears" :key="y" :value="y">{{ y }}</option>
           </select>
           <select
             v-model="filterCategory"
-            class="rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white text-sm"
+            class="rounded-lg border-gray-300 text-sm"
             @change="applyFilters"
           >
             <option value="">{{ $t('kpi.all_categories') }}</option>
@@ -49,38 +55,38 @@
       </div>
 
       <!-- View Toggle -->
-      <div class="flex gap-1 bg-gray-100 dark:bg-gray-700 rounded-lg p-1 w-fit">
+      <div class="flex gap-1 bg-gray-100 rounded-lg p-1 w-fit">
         <button
           v-for="v in ['compact', 'detailed']"
           :key="v"
           @click="viewMode = v"
           class="px-3 py-1.5 text-xs font-medium rounded-md transition-colors"
-          :class="viewMode === v ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700'"
+          :class="viewMode === v ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'"
         >
           {{ v === 'compact' ? $t('kpi.view_compact') : $t('kpi.view_detailed') }}
         </button>
       </div>
 
       <!-- Spreadsheet Table -->
-      <div v-if="spreadsheetData.length" class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+      <div v-if="spreadsheetData.length" class="bg-white rounded-xl border border-gray-200 overflow-hidden">
         <div class="overflow-x-auto">
           <table class="w-full text-xs">
             <thead>
-              <tr class="bg-gray-50 dark:bg-gray-700/50">
-                <th class="px-3 py-2.5 text-left text-gray-600 dark:text-gray-300 font-semibold sticky left-0 bg-gray-50 dark:bg-gray-700/50 z-10 min-w-[200px]">
+              <tr class="bg-gray-50">
+                <th class="px-3 py-2.5 text-left text-gray-600 font-semibold sticky left-0 bg-gray-50 z-10 min-w-[200px]">
                   {{ $t('kpi.kpi') }}
                 </th>
-                <th class="px-2 py-2.5 text-center text-gray-600 dark:text-gray-300 font-semibold min-w-[50px]">
+                <th class="px-2 py-2.5 text-center text-gray-600 font-semibold min-w-[50px]">
                   {{ $t('kpi.type') }}
                 </th>
                 <th
                   v-for="m in months"
                   :key="m.num"
-                  class="px-2 py-2.5 text-center text-gray-600 dark:text-gray-300 font-semibold min-w-[80px]"
+                  class="px-2 py-2.5 text-center text-gray-600 font-semibold min-w-[80px]"
                 >
                   {{ m.label }}
                 </th>
-                <th class="px-2 py-2.5 text-center text-gray-600 dark:text-gray-300 font-semibold min-w-[90px] bg-gray-100 dark:bg-gray-600/50">
+                <th class="px-2 py-2.5 text-center text-gray-600 font-semibold min-w-[90px] bg-gray-100">
                   YTD
                 </th>
               </tr>
@@ -88,20 +94,20 @@
             <tbody>
               <template v-for="kpi in spreadsheetData" :key="kpi.id">
                 <!-- Actual Row -->
-                <tr class="border-t border-gray-100 dark:border-gray-700/50 hover:bg-blue-50/30 dark:hover:bg-blue-900/10">
+                <tr class="border-t border-gray-100 hover:bg-blue-50/30">
                   <td
-                    class="px-3 py-2 sticky left-0 bg-white dark:bg-gray-800 z-10"
+                    class="px-3 py-2 sticky left-0 bg-white z-10"
                     :rowspan="viewMode === 'detailed' ? 4 : 2"
                   >
-                    <div class="font-medium text-gray-900 dark:text-white truncate">
+                    <div class="font-medium text-gray-900 truncate">
                       {{ locale === 'de' ? kpi.name_de : kpi.name_en }}
                     </div>
-                    <div class="text-[10px] text-gray-400 dark:text-gray-500">
+                    <div class="text-[10px] text-gray-400">
                       {{ kpi.category }} &middot; {{ kpi.unit || '—' }}
                     </div>
                   </td>
                   <td class="px-2 py-1 text-center">
-                    <span class="inline-block px-1.5 py-0.5 rounded text-[10px] font-semibold bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
+                    <span class="inline-block px-1.5 py-0.5 rounded text-[10px] font-semibold bg-blue-100 text-blue-700">
                       {{ $t('kpi.actual_short') }}
                     </span>
                   </td>
@@ -115,19 +121,19 @@
                       step="any"
                       :value="getActual(kpi, m.num)"
                       @change="setActual(kpi, m.num, $event)"
-                      class="w-full text-center text-xs rounded border-gray-200 dark:border-gray-600 dark:bg-gray-700/50 dark:text-white py-1 px-1 focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                      :class="getActual(kpi, m.num) !== null ? '' : 'bg-yellow-50 dark:bg-yellow-900/10'"
+                      class="w-full text-center text-xs rounded border-gray-200 py-1 px-1 focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                      :class="getActual(kpi, m.num) !== null ? '' : 'bg-yellow-50'"
                     />
                   </td>
-                  <td class="px-2 py-1 text-center font-semibold text-gray-900 dark:text-white bg-gray-50 dark:bg-gray-700/30">
+                  <td class="px-2 py-1 text-center font-semibold text-gray-900 bg-gray-50">
                     {{ formatNum(kpi.ytd_actual) }}
                   </td>
                 </tr>
 
                 <!-- Target Row -->
-                <tr class="hover:bg-orange-50/30 dark:hover:bg-orange-900/10">
+                <tr class="hover:bg-orange-50/30">
                   <td class="px-2 py-1 text-center">
-                    <span class="inline-block px-1.5 py-0.5 rounded text-[10px] font-semibold bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400">
+                    <span class="inline-block px-1.5 py-0.5 rounded text-[10px] font-semibold bg-orange-100 text-orange-700">
                       {{ $t('kpi.target_short') }}
                     </span>
                   </td>
@@ -141,18 +147,18 @@
                       step="any"
                       :value="getTarget(kpi, m.num)"
                       @change="setTarget(kpi, m.num, $event)"
-                      class="w-full text-center text-xs rounded border-orange-200 dark:border-orange-800/30 dark:bg-gray-700/50 dark:text-white py-1 px-1 bg-orange-50/50 dark:bg-orange-900/10 focus:ring-1 focus:ring-orange-500 focus:border-orange-500"
+                      class="w-full text-center text-xs rounded border-orange-200 py-1 px-1 bg-orange-50/50 focus:ring-1 focus:ring-orange-500 focus:border-orange-500"
                     />
                   </td>
-                  <td class="px-2 py-1 text-center font-semibold text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-700/30">
+                  <td class="px-2 py-1 text-center font-semibold text-gray-700 bg-gray-50">
                     {{ formatNum(kpi.ytd_target) }}
                   </td>
                 </tr>
 
                 <!-- Difference Row (detailed mode) -->
-                <tr v-if="viewMode === 'detailed'" class="hover:bg-gray-50/50 dark:hover:bg-gray-700/20">
+                <tr v-if="viewMode === 'detailed'" class="hover:bg-gray-50/50">
                   <td class="px-2 py-1 text-center">
-                    <span class="inline-block px-1.5 py-0.5 rounded text-[10px] font-semibold bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400">
+                    <span class="inline-block px-1.5 py-0.5 rounded text-[10px] font-semibold bg-gray-100 text-gray-600">
                       {{ $t('kpi.diff_short') }}
                     </span>
                   </td>
@@ -164,15 +170,15 @@
                   >
                     {{ formatDiff(kpi.months[m.num]?.diff) }}
                   </td>
-                  <td class="px-2 py-1 text-center font-semibold bg-gray-50 dark:bg-gray-700/30" :class="diffColorClass(kpi.ytd_diff, kpi.direction)">
+                  <td class="px-2 py-1 text-center font-semibold bg-gray-50" :class="diffColorClass(kpi.ytd_diff, kpi.direction)">
                     {{ formatDiff(kpi.ytd_diff) }}
                   </td>
                 </tr>
 
                 <!-- % Deviation Row (detailed mode) -->
-                <tr v-if="viewMode === 'detailed'" class="border-b-2 border-gray-200 dark:border-gray-600 hover:bg-gray-50/50 dark:hover:bg-gray-700/20">
+                <tr v-if="viewMode === 'detailed'" class="border-b-2 border-gray-200 hover:bg-gray-50/50">
                   <td class="px-2 py-1 text-center">
-                    <span class="inline-block px-1.5 py-0.5 rounded text-[10px] font-semibold bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400">
+                    <span class="inline-block px-1.5 py-0.5 rounded text-[10px] font-semibold bg-purple-100 text-purple-600">
                       %
                     </span>
                   </td>
@@ -184,13 +190,13 @@
                   >
                     {{ formatPct(kpi.months[m.num]?.pct_dev) }}
                   </td>
-                  <td class="px-2 py-1 text-center font-semibold bg-gray-50 dark:bg-gray-700/30" :class="pctColorClass(kpi.ytd_pct_dev, kpi.direction)">
+                  <td class="px-2 py-1 text-center font-semibold bg-gray-50" :class="pctColorClass(kpi.ytd_pct_dev, kpi.direction)">
                     {{ formatPct(kpi.ytd_pct_dev) }}
                   </td>
                 </tr>
 
                 <!-- Separator row in compact mode -->
-                <tr v-if="viewMode === 'compact'" class="border-b-2 border-gray-200 dark:border-gray-600">
+                <tr v-if="viewMode === 'compact'" class="border-b-2 border-gray-200">
                   <td colspan="15" class="h-0"></td>
                 </tr>
               </template>
@@ -200,15 +206,15 @@
       </div>
 
       <!-- Empty State -->
-      <div v-if="!spreadsheetData.length" class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-12 text-center">
+      <div v-if="!spreadsheetData.length" class="bg-white rounded-xl border border-gray-200 p-12 text-center">
         <div class="max-w-sm mx-auto">
-          <svg class="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-          <p class="text-gray-500 dark:text-gray-400 mb-4">{{ $t('kpi.no_kpis') }}</p>
+          <svg class="w-12 h-12 text-gray-300 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+          <p class="text-gray-500 mb-4">{{ $t('kpi.no_kpis') }}</p>
           <div class="flex gap-3 justify-center">
             <a href="/kpis/create" class="px-4 py-2 bg-primary-600 text-white text-sm rounded-lg hover:bg-primary-700">
               {{ $t('kpi.create') }}
             </a>
-            <a href="/kpis/catalog" class="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 text-sm rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700">
+            <a href="/kpis/catalog" class="px-4 py-2 border border-gray-300 text-gray-700 text-sm rounded-lg hover:bg-gray-50">
               {{ $t('kpi.catalog') }}
             </a>
           </div>
@@ -217,14 +223,14 @@
 
       <!-- Target Generator Modal -->
       <div v-if="showTargetGenerator" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50" @click.self="showTargetGenerator = false">
-        <div class="bg-white dark:bg-gray-800 rounded-xl w-full max-w-md p-6 space-y-4">
-          <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ $t('kpi.generate_targets') }}</h3>
-          <p class="text-sm text-gray-500 dark:text-gray-400">{{ $t('kpi.generate_targets_desc') }}</p>
+        <div class="bg-white rounded-xl w-full max-w-md p-6 space-y-4">
+          <h3 class="text-lg font-semibold text-gray-900">{{ $t('kpi.generate_targets') }}</h3>
+          <p class="text-sm text-gray-500">{{ $t('kpi.generate_targets_desc') }}</p>
           <form @submit.prevent="submitGenerateTargets">
             <div class="space-y-3">
               <div>
-                <label class="block text-sm text-gray-600 dark:text-gray-400 mb-1">{{ $t('kpi.select_kpi') }}</label>
-                <select v-model="genForm.kpi_definition_id" required class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white text-sm">
+                <label class="block text-sm text-gray-600 mb-1">{{ $t('kpi.select_kpi') }}</label>
+                <select v-model="genForm.kpi_definition_id" required class="w-full rounded-lg border-gray-300 text-sm">
                   <option value="">—</option>
                   <option v-for="kpi in spreadsheetData" :key="kpi.id" :value="kpi.id">
                     {{ locale === 'de' ? kpi.name_de : kpi.name_en }}
@@ -233,23 +239,23 @@
               </div>
               <div class="grid grid-cols-2 gap-3">
                 <div>
-                  <label class="block text-sm text-gray-600 dark:text-gray-400 mb-1">{{ $t('kpi.base_value') }}</label>
-                  <input v-model.number="genForm.base_value" type="number" step="any" required class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white text-sm" />
+                  <label class="block text-sm text-gray-600 mb-1">{{ $t('kpi.base_value') }}</label>
+                  <input v-model.number="genForm.base_value" type="number" step="any" required class="w-full rounded-lg border-gray-300 text-sm" />
                 </div>
                 <div>
-                  <label class="block text-sm text-gray-600 dark:text-gray-400 mb-1">{{ $t('kpi.growth_rate') }} (%)</label>
-                  <input v-model.number="genForm.growth_rate" type="number" step="any" required class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white text-sm" />
+                  <label class="block text-sm text-gray-600 mb-1">{{ $t('kpi.growth_rate') }} (%)</label>
+                  <input v-model.number="genForm.growth_rate" type="number" step="any" required class="w-full rounded-lg border-gray-300 text-sm" />
                 </div>
               </div>
               <div>
-                <label class="block text-sm text-gray-600 dark:text-gray-400 mb-1">{{ $t('kpi.start_month') }}</label>
-                <select v-model.number="genForm.start_month" class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white text-sm">
+                <label class="block text-sm text-gray-600 mb-1">{{ $t('kpi.start_month') }}</label>
+                <select v-model.number="genForm.start_month" class="w-full rounded-lg border-gray-300 text-sm">
                   <option v-for="m in months" :key="m.num" :value="m.num">{{ m.label }}</option>
                 </select>
               </div>
             </div>
             <div class="flex justify-end gap-3 mt-6">
-              <button type="button" @click="showTargetGenerator = false" class="px-4 py-2 text-sm text-gray-600 dark:text-gray-400">{{ $t('common.cancel') }}</button>
+              <button type="button" @click="showTargetGenerator = false" class="px-4 py-2 text-sm text-gray-600">{{ $t('common.cancel') }}</button>
               <button type="submit" :disabled="genForm.processing" class="px-4 py-2 bg-primary-600 text-white text-sm rounded-lg hover:bg-primary-700 disabled:opacity-50">
                 {{ $t('kpi.generate') }}
               </button>
@@ -428,12 +434,12 @@ function formatPct(val) {
 }
 
 function diffColorClass(val, direction) {
-  if (val === null || val === undefined) return 'text-gray-400 dark:text-gray-500';
+  if (val === null || val === undefined) return 'text-gray-400';
   const isGood = direction === 'lower_better' ? val < 0 : val > 0;
   const isBad = direction === 'lower_better' ? val > 0 : val < 0;
-  if (isGood) return 'text-green-600 dark:text-green-400';
-  if (isBad) return 'text-red-600 dark:text-red-400';
-  return 'text-gray-600 dark:text-gray-400';
+  if (isGood) return 'text-green-600';
+  if (isBad) return 'text-red-600';
+  return 'text-gray-600';
 }
 
 function pctColorClass(val, direction) {

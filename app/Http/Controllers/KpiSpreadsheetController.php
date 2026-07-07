@@ -216,6 +216,76 @@ class KpiSpreadsheetController extends Controller
         return redirect()->back()->with('success', __('common.success'));
     }
 
+    public function export(Request $request)
+    {
+        $year = (int) ($request->input('year') ?: date('Y'));
+
+        $kpis = KpiDefinition::where('is_template', false)
+            ->where('is_active', true)
+            ->orderBy('category')
+            ->orderBy('name_de')
+            ->get();
+
+        $kpiIds = $kpis->pluck('id');
+
+        $actuals = KpiValue::whereIn('kpi_definition_id', $kpiIds)
+            ->whereYear('recorded_at', $year)
+            ->select('kpi_definition_id', DB::raw('EXTRACT(MONTH FROM recorded_at) as month'), DB::raw('AVG(value) as avg_value'))
+            ->groupBy('kpi_definition_id', DB::raw('EXTRACT(MONTH FROM recorded_at)'))
+            ->get()
+            ->groupBy('kpi_definition_id');
+
+        $targets = KpiMonthlyTarget::whereIn('kpi_definition_id', $kpiIds)
+            ->where('year', $year)
+            ->get()
+            ->groupBy('kpi_definition_id');
+
+        $months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+        $headers = ['KPI', 'Category', 'Unit', 'Type'];
+        foreach ($months as $m) {
+            $headers[] = $m;
+        }
+        $headers[] = 'YTD';
+
+        $rows = [];
+        foreach ($kpis as $kpi) {
+            $kpiActuals = collect($actuals->get($kpi->id, []))->keyBy(fn ($r) => (int) $r->month);
+            $kpiTargets = collect($targets->get($kpi->id, []))->keyBy('month');
+
+            $actualRow = [$kpi->name_en, $kpi->category, $kpi->unit, 'Actual'];
+            $targetRow = [$kpi->name_en, $kpi->category, $kpi->unit, 'Target'];
+            $ytdA = 0;
+            $ytdT = 0;
+
+            for ($m = 1; $m <= 12; $m++) {
+                $a = $kpiActuals->has($m) ? round((float) $kpiActuals[$m]->avg_value, 2) : '';
+                $t = $kpiTargets->has($m) ? round((float) $kpiTargets[$m]->target_value, 2) : '';
+                $actualRow[] = $a;
+                $targetRow[] = $t;
+                if (is_numeric($a)) $ytdA += $a;
+                if (is_numeric($t)) $ytdT += $t;
+            }
+
+            $actualRow[] = round($ytdA, 2);
+            $targetRow[] = round($ytdT, 2);
+
+            $rows[] = $actualRow;
+            $rows[] = $targetRow;
+        }
+
+        $filename = "kpi-spreadsheet-{$year}.csv";
+
+        return response()->streamDownload(function () use ($headers, $rows) {
+            $handle = fopen('php://output', 'w');
+            fputcsv($handle, $headers);
+            foreach ($rows as $row) {
+                fputcsv($handle, $row);
+            }
+            fclose($handle);
+        }, $filename, ['Content-Type' => 'text/csv']);
+    }
+
     private function calculateStatus(KpiDefinition $kpi, float $value): string
     {
         if (!$kpi->target_value) {
