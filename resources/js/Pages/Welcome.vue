@@ -6,7 +6,7 @@
       <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
         <div class="flex items-center gap-2.5">
           <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-            <span class="text-white text-sm font-bold">K</span>
+            <span class="text-white text-sm font-bold">A</span>
           </div>
           <span class="font-bold text-gray-900 dark:text-white text-lg">Allocore Hub</span>
         </div>
@@ -34,7 +34,7 @@
           {{ $t('welcome.badge') }}
         </div>
         <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white leading-tight">
-          {{ $t('welcome.hero_title_1') }} <span class="text-blue-600">KPIs</span><br class="hidden sm:block" />
+          {{ $t('welcome.hero_title_1') }} <span class="text-blue-600">{{ $t('welcome.hero_highlight') }}</span><br class="hidden sm:block" />
           {{ $t('welcome.hero_title_2') }}
         </h1>
         <p class="mt-6 text-lg text-gray-500 dark:text-gray-400 max-w-2xl mx-auto leading-relaxed">
@@ -47,6 +47,26 @@
           <a href="/login" class="w-full sm:w-auto px-8 py-3.5 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 font-semibold rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
             {{ $t('welcome.sign_in') }}
           </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Connected Tools -->
+    <section class="py-20 px-6">
+      <div class="max-w-5xl mx-auto">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl font-bold text-gray-900 dark:text-white">{{ $t('welcome.tools_title') }}</h2>
+          <p class="mt-3 text-gray-500 dark:text-gray-400 max-w-2xl mx-auto">{{ $t('welcome.tools_desc') }}</p>
+        </div>
+        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div v-for="tool in tools" :key="tool.name" class="relative bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-5 flex flex-col items-start hover:border-blue-300 dark:hover:border-blue-700 transition-colors">
+            <div class="h-11 w-11 rounded-xl flex items-center justify-center text-white text-lg font-bold shadow-sm" :class="tool.badge">{{ tool.initial }}</div>
+            <div class="mt-3 flex items-center gap-2">
+              <h3 class="font-semibold text-gray-900 dark:text-white">{{ tool.name }}</h3>
+              <span v-if="tool.soon" class="text-[10px] uppercase tracking-wide font-semibold px-1.5 py-0.5 rounded bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400">{{ $t('welcome.tools_soon') }}</span>
+            </div>
+            <p class="mt-1.5 text-sm text-gray-500 dark:text-gray-400 leading-relaxed">{{ $t(tool.descKey) }}</p>
+          </div>
         </div>
       </div>
     </section>
@@ -137,7 +157,7 @@
       <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
         <div class="flex items-center gap-2">
           <div class="w-6 h-6 bg-blue-600 rounded-md flex items-center justify-center">
-            <span class="text-white text-[10px] font-bold">K</span>
+            <span class="text-white text-[10px] font-bold">A</span>
           </div>
           <span class="text-sm text-gray-500 dark:text-gray-400">Allocore Hub</span>
         </div>
@@ -156,6 +176,13 @@ import { usePage } from '@inertiajs/vue3';
 
 const page = usePage();
 const auth = computed(() => page.props.auth);
+
+const tools = [
+  { name: 'AuditPro', initial: 'A', badge: 'bg-blue-600', descKey: 'welcome.tool_auditpro' },
+  { name: 'InvoiceMaker', initial: 'I', badge: 'bg-emerald-600', descKey: 'welcome.tool_invoicemaker', soon: true },
+  { name: 'EasySOP', initial: 'E', badge: 'bg-purple-600', descKey: 'welcome.tool_easysop', soon: true },
+  { name: 'More', initial: '+', badge: 'bg-gray-400 dark:bg-gray-600', descKey: 'welcome.tool_more' },
+];
 
 const features = [
   {
