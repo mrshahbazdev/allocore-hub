@@ -7,7 +7,7 @@ import { createApp, h } from 'vue';
 import { ZiggyVue } from '../../vendor/tightenco/ziggy';
 import i18n from './i18n';
 
-const appName = import.meta.env.VITE_APP_NAME || 'KPI Tool';
+const appName = import.meta.env.VITE_APP_NAME || 'Allocore Hub';
 
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,

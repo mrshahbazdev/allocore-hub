@@ -1,22 +1,30 @@
-# KPI Tool
+# Allocore Hub
 
-A professional **Key Performance Indicator (KPI) Management System** built with Laravel, Vue.js, and Inertia.js. Track, visualize, and analyze business KPIs with an Excel-style spreadsheet, interactive charts, and a bilingual interface (German/English).
+The **Allocore Control Tower** — a central hub that aggregates KPIs from the whole Allocore tool ecosystem (AuditPro, InvoiceMaker, EasySOP, …) into one company-scoped dashboard. Built with Laravel, Vue 3, and Inertia.js. Bilingual (German/English).
+
+Each spoke tool authenticates with an `X-Allocore-Api-Key` and pushes metrics to `POST /api/allocore/kpi/ingest`. The hub auto-creates "connected" KPIs from those metrics, while entrepreneurs set targets (debit figures) and thresholds and control who sees what.
+
+**Phase 1 (current):** AuditPro → Hub. One audit run pushes 6 metrics — *Enterprise Readiness* plus the 5 pillars (Umsatz, Gewinn, Ordnung, Einfluss, Vermächtnis).
 
 ---
 
 ## Features
 
-- **Authentication** — Secure login, registration, and profile management (Laravel Breeze)
-- **Dashboard** — Summary cards, status doughnut chart, monthly bar chart, top KPIs, recent entries
-- **KPI Spreadsheet** — Excel-style monthly grid with inline editing for Actuals & Targets, auto-calculated Difference and % Deviation
-- **KPI Definitions** — Full CRUD with bilingual support (DE/EN), formula, unit, category, thresholds
-- **KPI Catalog** — 35+ pre-built templates across 6 categories (Strategic, Sales, Operations, Marketing, Financial, HR)
-- **Target Generator** — Auto-generate monthly targets with custom growth rate
-- **Chart.js Visualization** — Trend line charts on KPI detail pages with color-coded status points
-- **CSV Import/Export** — Export spreadsheet as CSV; bulk-import values per KPI
-- **Dark Mode** — Toggle with localStorage persistence
-- **Bilingual UI** — German (primary) and English via vue-i18n locale switcher
-- **Shared Hosting Ready** — `.htaccess` included, pre-built assets committed
+### Control Tower / multi-tenancy
+- **Companies** — every registration creates a company; the registrant becomes its **owner**
+- **Roles** — `owner` / `manager` (full access) and `member` (sees only assigned KPIs)
+- **Tools page** — connect/disconnect Allocore tools, reveal & regenerate API keys, enable/disable
+- **Team page** — create users, set roles, assign which KPIs each member can see
+- **Allocore ingestion API** — `POST /api/allocore/kpi/ingest`, idempotent on `external_ref + metric_key`
+- **Connected KPIs** — auto-created from incoming metrics via a bilingual metadata catalog
+
+### KPI management
+- **Dashboard** — Enterprise Readiness hero + audit pillars, status doughnut, monthly bar chart, top KPIs, recent entries (all company-scoped)
+- **KPI Spreadsheet** — Excel-style monthly grid with inline Actuals & Targets, auto Difference and % Deviation
+- **KPI Definitions** — Full CRUD (DE/EN), formula, unit, category, target/warning/critical thresholds
+- **KPI Catalog** — 35+ pre-built templates across 6 categories
+- **Target Generator** — Auto-generate monthly targets with a growth rate
+- **CSV Import/Export**, **Dark Mode**, **Bilingual UI**, **Shared-hosting ready**
 
 ---
 
@@ -45,8 +53,8 @@ A professional **Key Performance Indicator (KPI) Management System** built with 
 ### Setup
 
 ```bash
-git clone https://github.com/mrshahbazdev/kpi-tool.git
-cd kpi-tool
+git clone https://github.com/mrshahbazdev/allocore-hub.git
+cd allocore-hub
 
 # Install dependencies
 composer install
@@ -66,7 +74,29 @@ npm run build
 php artisan serve
 ```
 
-Visit `http://localhost:8000` — Login with **admin@kpi-tool.com** / **password**
+Visit `http://localhost:8000` and **register** — your first account creates a company and becomes its owner. Then open **Tools**, connect **AuditPro**, and copy the generated API key into the audit tool.
+
+### Allocore integration
+
+| Setting | Value |
+|---------|-------|
+| Ingest endpoint | `POST /api/allocore/kpi/ingest` |
+| Auth header | `X-Allocore-Api-Key: alc_…` |
+| Hub URL config | `ALLOCORE_HUB_URL` (falls back to `APP_URL`) |
+
+Example payload:
+
+```json
+{
+  "source": "audit",
+  "external_ref": "audit-run-123",
+  "recorded_at": "2026-07-09",
+  "metrics": [
+    { "key": "enterprise_readiness", "value": 3.4, "scale_max": 5 },
+    { "key": "audit.umsatz", "value": 4, "scale_max": 5 }
+  ]
+}
+```
 
 ---
 
@@ -130,10 +160,13 @@ resources/js/
 
 | Table | Purpose |
 |-------|---------|
-| `users` | Authentication |
-| `kpi_definitions` | KPI metadata (name, formula, unit, thresholds, category) |
-| `kpi_values` | Recorded values with status (on_target / warning / critical) |
+| `companies` | Tenants (name, slug, plan) |
+| `users` | Authentication + `company_id` + `role` |
+| `tool_accesses` | Per-company connected tools + API keys + sync status |
+| `kpi_definitions` | KPI metadata + `company_id`, `source`, `source_key`, `is_connected`, `scale_max` |
+| `kpi_values` | Recorded values + `source`, `external_ref` (idempotency) |
 | `kpi_monthly_targets` | Monthly target values with growth rate |
+| `kpi_user_assignments` | Per-member KPI visibility (with `can_edit`) |
 
 ---
 
@@ -144,15 +177,6 @@ resources/js/
 | On Target | value > warning_threshold | value < warning_threshold |
 | Warning | critical < value <= warning | warning <= value < critical |
 | Critical | value <= critical_threshold | value >= critical_threshold |
-
----
-
-## Default Login
-
-| Field | Value |
-|-------|-------|
-| Email | admin@kpi-tool.com |
-| Password | password |
 
 ---
 

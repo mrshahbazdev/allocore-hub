@@ -2,8 +2,49 @@
   <AppShell>
     <div class="space-y-6">
       <div class="flex items-center justify-between">
-        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ $t('nav.dashboard') }}</h1>
+        <div>
+          <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ $t('nav.dashboard') }}</h1>
+          <p v-if="company" class="text-sm text-gray-500 dark:text-gray-400">{{ company.name }}</p>
+        </div>
         <span class="text-sm text-gray-500 dark:text-gray-400">{{ year }}</span>
+      </div>
+
+      <!-- Enterprise Readiness (from Audit) + connected pillar KPIs -->
+      <div v-if="enterpriseReadiness || connectedKpis.length" class="grid lg:grid-cols-3 gap-6">
+        <div class="bg-gradient-to-br from-primary-600 to-primary-800 rounded-xl p-5 text-white flex flex-col justify-between">
+          <div class="text-sm font-medium opacity-90">Enterprise Readiness</div>
+          <div v-if="enterpriseReadiness && enterpriseReadiness.value !== null" class="mt-2">
+            <div class="text-4xl font-bold">{{ readinessPct(enterpriseReadiness) }}<span class="text-xl">%</span></div>
+            <div class="text-xs opacity-80 mt-1">
+              {{ Number(enterpriseReadiness.value).toFixed(1) }} / {{ enterpriseReadiness.scale_max || 5 }}
+              <span v-if="enterpriseReadiness.target_value"> · Ziel {{ Number(enterpriseReadiness.target_value).toFixed(1) }}</span>
+            </div>
+            <div class="text-xs opacity-70 mt-1">{{ enterpriseReadiness.recorded_at }}</div>
+          </div>
+          <div v-else class="mt-2 text-sm opacity-80">{{ $t('kpi.no_data') }} — connect AuditPro</div>
+        </div>
+
+        <div class="lg:col-span-2 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5">
+          <h3 class="text-sm font-semibold text-gray-900 dark:text-white mb-4">Audit-Säulen</h3>
+          <div v-if="connectedKpis.length" class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            <a
+              v-for="kpi in connectedKpis"
+              :key="kpi.id"
+              :href="`/kpis/${kpi.id}`"
+              class="p-3 bg-gray-50 dark:bg-gray-700/30 rounded-lg hover:ring-2 hover:ring-primary-400 transition"
+            >
+              <div class="text-xs text-gray-500 dark:text-gray-400 truncate">{{ locale === 'de' ? kpi.name_de : kpi.name_en }}</div>
+              <div class="text-xl font-bold text-gray-900 dark:text-white">
+                {{ kpi.value !== null ? Number(kpi.value).toFixed(1) : '—' }}
+                <span class="text-xs text-gray-400">/ {{ kpi.scale_max || 5 }}</span>
+              </div>
+              <div v-if="kpi.target_value" class="text-[10px] text-gray-400">Ziel {{ Number(kpi.target_value).toFixed(1) }}</div>
+            </a>
+          </div>
+          <div v-else class="text-center text-gray-400 dark:text-gray-500 py-6 text-sm">
+            {{ $t('kpi.no_data') }} — <a href="/tools" class="text-primary-600 dark:text-primary-400 underline">connect a tool</a>
+          </div>
+        </div>
       </div>
 
       <!-- Summary Cards -->
@@ -60,21 +101,6 @@
             <Bar :data="monthlyChartData" :options="barOptions" />
           </div>
           <div v-else class="text-center text-gray-400 dark:text-gray-500 py-8">{{ $t('kpi.no_data') }}</div>
-        </div>
-      </div>
-
-      <!-- Category Breakdown -->
-      <div v-if="categoryBreakdown.length" class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5">
-        <h3 class="text-sm font-semibold text-gray-900 dark:text-white mb-4">{{ $t('kpi.category') }}</h3>
-        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-          <div
-            v-for="cat in categoryBreakdown"
-            :key="cat.category"
-            class="text-center p-3 bg-gray-50 dark:bg-gray-700/30 rounded-lg"
-          >
-            <div class="text-lg font-bold text-primary-600 dark:text-primary-400">{{ cat.count }}</div>
-            <div class="text-xs text-gray-500 dark:text-gray-400 truncate">{{ cat.category }}</div>
-          </div>
         </div>
       </div>
 
@@ -154,15 +180,23 @@ ChartJS.register(ArcElement, Tooltip, Legend, BarElement, CategoryScale, LinearS
 const { t } = useI18n();
 const page = usePage();
 const locale = computed(() => page.props.locale || 'de');
+const company = computed(() => page.props.auth?.company);
 
 const props = defineProps({
   stats: { type: Object, default: () => ({}) },
   monthlyTotals: { type: Array, default: () => [] },
   topKpis: { type: Array, default: () => [] },
   recentValues: { type: Array, default: () => [] },
-  categoryBreakdown: { type: Array, default: () => [] },
+  enterpriseReadiness: { type: Object, default: null },
+  connectedKpis: { type: Array, default: () => [] },
   year: { type: Number, default: () => new Date().getFullYear() },
 });
+
+function readinessPct(kpi) {
+  if (!kpi || kpi.value === null) return 0;
+  const max = kpi.scale_max || 5;
+  return Math.round((Number(kpi.value) / max) * 100);
+}
 
 const statusChartData = computed(() => ({
   labels: [t('kpi.on_target'), t('kpi.warning'), t('kpi.critical')],

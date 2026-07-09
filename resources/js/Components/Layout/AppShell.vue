@@ -4,9 +4,9 @@
     <aside class="fixed inset-y-0 left-0 z-30 w-56 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 hidden lg:flex lg:flex-col">
       <div class="flex items-center gap-2 px-4 h-14 border-b border-gray-200 dark:border-gray-700">
         <div class="w-7 h-7 bg-primary-600 rounded-lg flex items-center justify-center">
-          <span class="text-white text-xs font-bold">K</span>
+          <span class="text-white text-xs font-bold">A</span>
         </div>
-        <span class="font-bold text-gray-900 dark:text-white text-sm">KPI Tool</span>
+        <span class="font-bold text-gray-900 dark:text-white text-sm">Allocore Hub</span>
       </div>
       <nav class="p-3 space-y-1 flex-1">
         <a
@@ -62,7 +62,7 @@
       <button @click="mobileOpen = !mobileOpen" class="text-gray-600 dark:text-gray-400">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
       </button>
-      <span class="font-bold text-gray-900 dark:text-white text-sm">KPI Tool</span>
+      <span class="font-bold text-gray-900 dark:text-white text-sm">Allocore Hub</span>
       <div class="ml-auto flex items-center gap-2">
         <button @click="toggleDark" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
           <svg v-if="!isDark" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
@@ -76,7 +76,7 @@
       <div class="absolute inset-0 bg-black/50"></div>
       <aside class="absolute inset-y-0 left-0 w-56 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700" @click.stop>
         <div class="flex items-center gap-2 px-4 h-14 border-b border-gray-200 dark:border-gray-700">
-          <span class="font-bold text-gray-900 dark:text-white text-sm">KPI Tool</span>
+          <span class="font-bold text-gray-900 dark:text-white text-sm">Allocore Hub</span>
         </div>
         <nav class="p-3 space-y-1">
           <a
@@ -134,12 +134,20 @@ function toggleDark() {
   localStorage.setItem('theme', isDark.value ? 'dark' : 'light');
 }
 
-const navItems = computed(() => [
-  { href: '/dashboard', label: t('nav.dashboard'), icon: '<svg viewBox="0 0 20 20" fill="currentColor"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/></svg>' },
-  { href: '/kpis/spreadsheet', label: t('nav.spreadsheet'), icon: '<svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M.99 5.24A2.25 2.25 0 013.25 3h13.5A2.25 2.25 0 0119 5.25v9.5A2.25 2.25 0 0116.75 17H3.25A2.25 2.25 0 011 14.75v-9.5zm1.5 0v2.25h15v-2.25a.75.75 0 00-.75-.75H3.25a.75.75 0 00-.75.75zm15 3.75h-15v5.75c0 .414.336.75.75.75h13.5a.75.75 0 00.75-.75V8.99zM6.5 9.75a.75.75 0 00-.75.75v2.5c0 .414.336.75.75.75h7a.75.75 0 00.75-.75v-2.5a.75.75 0 00-.75-.75h-7z" clip-rule="evenodd"/></svg>' },
-  { href: '/kpis', label: t('nav.definitions'), icon: '<svg viewBox="0 0 20 20" fill="currentColor"><path d="M10 3.75a2 2 0 10-4 0 2 2 0 004 0zM17.25 4.5a.75.75 0 000-1.5h-5.5a.75.75 0 000 1.5h5.5zM5 3.75a3 3 0 115.133 2.1l1.413 1.413a.75.75 0 01-1.06 1.06L9.073 6.91A3 3 0 015 3.75zM4.75 12a.75.75 0 01.75-.75h9a.75.75 0 010 1.5h-9a.75.75 0 01-.75-.75zM4.75 15.5a.75.75 0 01.75-.75h9a.75.75 0 010 1.5h-9a.75.75 0 01-.75-.75z"/></svg>' },
-  { href: '/kpis/catalog', label: t('kpi.catalog'), icon: '<svg viewBox="0 0 20 20" fill="currentColor"><path d="M10.75 16.82A7.462 7.462 0 0115 15.5c.71 0 1.396.098 2.046.282A.75.75 0 0018 15.06V4.56a.75.75 0 00-.546-.721A9.006 9.006 0 0015 3.5a8.98 8.98 0 00-4.25 1.065v12.255zM9.25 4.565A8.98 8.98 0 005 3.5a9.006 9.006 0 00-2.454.339A.75.75 0 002 4.56v10.5a.75.75 0 00.954.721A7.462 7.462 0 015 15.5c1.579 0 3.042.487 4.25 1.32V4.565z"/></svg>' },
-]);
+const canManage = computed(() => page.props.auth?.can_manage);
+
+const navItems = computed(() => {
+  const items = [
+    { href: '/dashboard', label: t('nav.dashboard'), icon: '<svg viewBox="0 0 20 20" fill="currentColor"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/></svg>' },
+    { href: '/kpis/spreadsheet', label: t('nav.spreadsheet'), icon: '<svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M.99 5.24A2.25 2.25 0 013.25 3h13.5A2.25 2.25 0 0119 5.25v9.5A2.25 2.25 0 0116.75 17H3.25A2.25 2.25 0 011 14.75v-9.5zm1.5 0v2.25h15v-2.25a.75.75 0 00-.75-.75H3.25a.75.75 0 00-.75.75zm15 3.75h-15v5.75c0 .414.336.75.75.75h13.5a.75.75 0 00.75-.75V8.99zM6.5 9.75a.75.75 0 00-.75.75v2.5c0 .414.336.75.75.75h7a.75.75 0 00.75-.75v-2.5a.75.75 0 00-.75-.75h-7z" clip-rule="evenodd"/></svg>' },
+    { href: '/kpis', label: t('nav.definitions'), icon: '<svg viewBox="0 0 20 20" fill="currentColor"><path d="M10 3.75a2 2 0 10-4 0 2 2 0 004 0zM17.25 4.5a.75.75 0 000-1.5h-5.5a.75.75 0 000 1.5h5.5zM5 3.75a3 3 0 115.133 2.1l1.413 1.413a.75.75 0 01-1.06 1.06L9.073 6.91A3 3 0 015 3.75zM4.75 12a.75.75 0 01.75-.75h9a.75.75 0 010 1.5h-9a.75.75 0 01-.75-.75zM4.75 15.5a.75.75 0 01.75-.75h9a.75.75 0 010 1.5h-9a.75.75 0 01-.75-.75z"/></svg>' },
+  ];
+  if (canManage.value) {
+    items.push({ href: '/tools', label: t('nav.tools'), icon: '<svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.53 1.53 0 01-2.29.95c-1.37-.84-2.94.73-2.1 2.1.62 1.02.08 2.35-1.09 2.28-1.56.09-1.56 2.6 0 2.68 1.17.07 1.71 1.4 1.09 2.42-.84 1.37.73 2.94 2.1 2.1a1.53 1.53 0 012.29.95c.38 1.56 2.6 1.56 2.98 0a1.53 1.53 0 012.29-.95c1.37.84 2.94-.73 2.1-2.1a1.53 1.53 0 01.95-2.29c1.56-.38 1.56-2.6 0-2.98a1.53 1.53 0 01-.95-2.29c.84-1.37-.73-2.94-2.1-2.1a1.53 1.53 0 01-2.29-.95zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/></svg>' });
+    items.push({ href: '/team', label: t('nav.team'), icon: '<svg viewBox="0 0 20 20" fill="currentColor"><path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z"/></svg>' });
+  }
+  return items;
+});
 
 function isActive(href) {
   const path = typeof window !== 'undefined' ? window.location.pathname : '';
