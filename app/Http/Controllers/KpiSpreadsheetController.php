@@ -6,17 +6,19 @@ use App\Models\KpiDefinition;
 use App\Models\KpiMonthlyTarget;
 use App\Models\KpiValue;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class KpiSpreadsheetController extends Controller
 {
     public function index(Request $request)
     {
+        $user = Auth::user();
         $year = (int) ($request->input('year') ?: date('Y'));
         $categoryFilter = $request->input('category');
 
-        $query = KpiDefinition::where('is_template', false)
+        $query = KpiDefinition::visibleTo($user)
+            ->where('is_template', false)
             ->where('is_active', true);
 
         if ($categoryFilter) {
@@ -24,22 +26,9 @@ class KpiSpreadsheetController extends Controller
         }
 
         $kpis = $query->orderBy('category')->orderBy('name_de')->get();
-
         $kpiIds = $kpis->pluck('id');
 
-        $actuals = KpiValue::whereIn('kpi_definition_id', $kpiIds)
-            ->whereYear('recorded_at', $year)
-            ->select('kpi_definition_id', DB::raw('EXTRACT(MONTH FROM recorded_at) as month'), DB::raw('AVG(value) as avg_value'))
-            ->groupBy('kpi_definition_id', DB::raw('EXTRACT(MONTH FROM recorded_at)'))
-            ->get()
-            ->groupBy('kpi_definition_id')
-            ->map(function ($group) {
-                $months = [];
-                foreach ($group as $row) {
-                    $months[(int) $row->month] = round((float) $row->avg_value, 4);
-                }
-                return $months;
-            });
+        $actuals = $this->monthlyActuals($kpiIds, $year);
 
         $targets = KpiMonthlyTarget::whereIn('kpi_definition_id', $kpiIds)
             ->where('year', $year)
@@ -50,6 +39,7 @@ class KpiSpreadsheetController extends Controller
                 foreach ($group as $row) {
                     $months[$row->month] = round((float) $row->target_value, 4);
                 }
+
                 return $months;
             });
 
@@ -73,8 +63,12 @@ class KpiSpreadsheetController extends Controller
                     'pct_dev' => $pctDev,
                 ];
 
-                if ($actual !== null) $ytdActual += $actual;
-                if ($target !== null) $ytdTarget += $target;
+                if ($actual !== null) {
+                    $ytdActual += $actual;
+                }
+                if ($target !== null) {
+                    $ytdTarget += $target;
+                }
             }
 
             return [
@@ -85,6 +79,7 @@ class KpiSpreadsheetController extends Controller
                 'unit' => $kpi->unit,
                 'direction' => $kpi->direction,
                 'formula' => $kpi->formula,
+                'is_connected' => $kpi->is_connected,
                 'months' => $monthlyData,
                 'ytd_actual' => round($ytdActual, 4),
                 'ytd_target' => round($ytdTarget, 4),
@@ -93,20 +88,21 @@ class KpiSpreadsheetController extends Controller
             ];
         });
 
-        $categories = KpiDefinition::where('is_template', false)
+        $categories = KpiDefinition::visibleTo($user)
+            ->where('is_template', false)
             ->distinct()
             ->pluck('category')
             ->filter()
             ->values();
 
-        $availableYears = KpiValue::selectRaw('EXTRACT(YEAR FROM recorded_at) as yr')
-            ->distinct()
-            ->pluck('yr')
-            ->map(fn ($y) => (int) $y)
+        $availableYears = KpiValue::whereIn('kpi_definition_id', $kpiIds)
+            ->get(['recorded_at'])
+            ->map(fn ($v) => (int) $v->recorded_at->format('Y'))
+            ->unique()
             ->sort()
             ->values();
 
-        if (!$availableYears->contains($year)) {
+        if (! $availableYears->contains($year)) {
             $availableYears->push($year);
             $availableYears = $availableYears->sort()->values();
         }
@@ -116,21 +112,26 @@ class KpiSpreadsheetController extends Controller
             'categories' => $categories,
             'year' => $year,
             'availableYears' => $availableYears,
+            'canManage' => $user->canManageCompany(),
             'filters' => $request->only(['category', 'year']),
         ]);
     }
 
     public function storeTargets(Request $request)
     {
+        $this->authorizeManager();
+
         $validated = $request->validate([
             'targets' => ['required', 'array'],
-            'targets.*.kpi_definition_id' => ['required', 'exists:kpi_definitions,id'],
+            'targets.*.kpi_definition_id' => ['required', 'integer'],
             'targets.*.year' => ['required', 'integer', 'min:2020', 'max:2100'],
             'targets.*.month' => ['required', 'integer', 'min:1', 'max:12'],
             'targets.*.target_value' => ['required', 'numeric'],
         ]);
 
         foreach ($validated['targets'] as $target) {
+            $this->assertCompanyKpi($target['kpi_definition_id']);
+
             KpiMonthlyTarget::updateOrCreate(
                 [
                     'kpi_definition_id' => $target['kpi_definition_id'],
@@ -150,14 +151,14 @@ class KpiSpreadsheetController extends Controller
     {
         $validated = $request->validate([
             'actuals' => ['required', 'array'],
-            'actuals.*.kpi_definition_id' => ['required', 'exists:kpi_definitions,id'],
+            'actuals.*.kpi_definition_id' => ['required', 'integer'],
             'actuals.*.year' => ['required', 'integer', 'min:2020', 'max:2100'],
             'actuals.*.month' => ['required', 'integer', 'min:1', 'max:12'],
             'actuals.*.value' => ['required', 'numeric'],
         ]);
 
         foreach ($validated['actuals'] as $entry) {
-            $kpi = KpiDefinition::find($entry['kpi_definition_id']);
+            $kpi = $this->assertVisibleKpi($entry['kpi_definition_id']);
             $recordedAt = sprintf('%04d-%02d-01', $entry['year'], $entry['month']);
 
             $existing = KpiValue::where('kpi_definition_id', $entry['kpi_definition_id'])
@@ -178,6 +179,8 @@ class KpiSpreadsheetController extends Controller
                     'value' => $entry['value'],
                     'recorded_at' => $recordedAt,
                     'status' => $status,
+                    'source' => 'manual',
+                    'recorded_by' => Auth::id(),
                 ]);
             }
         }
@@ -187,13 +190,17 @@ class KpiSpreadsheetController extends Controller
 
     public function generateTargets(Request $request)
     {
+        $this->authorizeManager();
+
         $validated = $request->validate([
-            'kpi_definition_id' => ['required', 'exists:kpi_definitions,id'],
+            'kpi_definition_id' => ['required', 'integer'],
             'year' => ['required', 'integer', 'min:2020', 'max:2100'],
             'base_value' => ['required', 'numeric'],
             'growth_rate' => ['required', 'numeric', 'min:-100', 'max:1000'],
             'start_month' => ['required', 'integer', 'min:1', 'max:12'],
         ]);
+
+        $this->assertCompanyKpi($validated['kpi_definition_id']);
 
         $value = (float) $validated['base_value'];
         $rate = (float) $validated['growth_rate'] / 100;
@@ -218,27 +225,31 @@ class KpiSpreadsheetController extends Controller
 
     public function export(Request $request)
     {
+        $user = Auth::user();
         $year = (int) ($request->input('year') ?: date('Y'));
 
-        $kpis = KpiDefinition::where('is_template', false)
+        $kpis = KpiDefinition::visibleTo($user)
+            ->where('is_template', false)
             ->where('is_active', true)
             ->orderBy('category')
             ->orderBy('name_de')
             ->get();
 
         $kpiIds = $kpis->pluck('id');
-
-        $actuals = KpiValue::whereIn('kpi_definition_id', $kpiIds)
-            ->whereYear('recorded_at', $year)
-            ->select('kpi_definition_id', DB::raw('EXTRACT(MONTH FROM recorded_at) as month'), DB::raw('AVG(value) as avg_value'))
-            ->groupBy('kpi_definition_id', DB::raw('EXTRACT(MONTH FROM recorded_at)'))
-            ->get()
-            ->groupBy('kpi_definition_id');
+        $actuals = $this->monthlyActuals($kpiIds, $year);
 
         $targets = KpiMonthlyTarget::whereIn('kpi_definition_id', $kpiIds)
             ->where('year', $year)
             ->get()
-            ->groupBy('kpi_definition_id');
+            ->groupBy('kpi_definition_id')
+            ->map(function ($group) {
+                $months = [];
+                foreach ($group as $row) {
+                    $months[$row->month] = round((float) $row->target_value, 4);
+                }
+
+                return $months;
+            });
 
         $months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
@@ -250,8 +261,8 @@ class KpiSpreadsheetController extends Controller
 
         $rows = [];
         foreach ($kpis as $kpi) {
-            $kpiActuals = collect($actuals->get($kpi->id, []))->keyBy(fn ($r) => (int) $r->month);
-            $kpiTargets = collect($targets->get($kpi->id, []))->keyBy('month');
+            $kpiActuals = $actuals->get($kpi->id, []);
+            $kpiTargets = $targets->get($kpi->id, []);
 
             $actualRow = [$kpi->name_en, $kpi->category, $kpi->unit, 'Actual'];
             $targetRow = [$kpi->name_en, $kpi->category, $kpi->unit, 'Target'];
@@ -259,12 +270,16 @@ class KpiSpreadsheetController extends Controller
             $ytdT = 0;
 
             for ($m = 1; $m <= 12; $m++) {
-                $a = $kpiActuals->has($m) ? round((float) $kpiActuals[$m]->avg_value, 2) : '';
-                $t = $kpiTargets->has($m) ? round((float) $kpiTargets[$m]->target_value, 2) : '';
-                $actualRow[] = $a;
-                $targetRow[] = $t;
-                if (is_numeric($a)) $ytdA += $a;
-                if (is_numeric($t)) $ytdT += $t;
+                $a = $kpiActuals[$m] ?? '';
+                $t = $kpiTargets[$m] ?? '';
+                $actualRow[] = $a === '' ? '' : round($a, 2);
+                $targetRow[] = $t === '' ? '' : round($t, 2);
+                if (is_numeric($a)) {
+                    $ytdA += $a;
+                }
+                if (is_numeric($t)) {
+                    $ytdT += $t;
+                }
             }
 
             $actualRow[] = round($ytdA, 2);
@@ -286,20 +301,61 @@ class KpiSpreadsheetController extends Controller
         }, $filename, ['Content-Type' => 'text/csv']);
     }
 
+    /**
+     * Average actual value per month, grouped per KPI. DB-agnostic.
+     */
+    private function monthlyActuals($kpiIds, int $year)
+    {
+        return KpiValue::whereIn('kpi_definition_id', $kpiIds)
+            ->whereYear('recorded_at', $year)
+            ->get(['kpi_definition_id', 'recorded_at', 'value'])
+            ->groupBy('kpi_definition_id')
+            ->map(function ($group) {
+                return $group->groupBy(fn ($v) => (int) $v->recorded_at->format('n'))
+                    ->map(fn ($rows) => round($rows->avg('value'), 4))
+                    ->all();
+            });
+    }
+
     private function calculateStatus(KpiDefinition $kpi, float $value): string
     {
-        if (!$kpi->target_value) {
-            return 'on_target';
-        }
-
         if ($kpi->direction === 'higher_better') {
-            if ($kpi->critical_threshold && $value <= $kpi->critical_threshold) return 'critical';
-            if ($kpi->warning_threshold && $value <= $kpi->warning_threshold) return 'warning';
+            if ($kpi->critical_threshold && $value <= $kpi->critical_threshold) {
+                return 'critical';
+            }
+            if ($kpi->warning_threshold && $value <= $kpi->warning_threshold) {
+                return 'warning';
+            }
+
             return 'on_target';
         }
 
-        if ($kpi->critical_threshold && $value >= $kpi->critical_threshold) return 'critical';
-        if ($kpi->warning_threshold && $value >= $kpi->warning_threshold) return 'warning';
+        if ($kpi->critical_threshold && $value >= $kpi->critical_threshold) {
+            return 'critical';
+        }
+        if ($kpi->warning_threshold && $value >= $kpi->warning_threshold) {
+            return 'warning';
+        }
+
         return 'on_target';
+    }
+
+    protected function authorizeManager(): void
+    {
+        abort_unless(Auth::user()?->canManageCompany(), 403);
+    }
+
+    protected function assertCompanyKpi(int $kpiId): KpiDefinition
+    {
+        $kpi = KpiDefinition::where('company_id', Auth::user()->company_id)->findOrFail($kpiId);
+
+        return $kpi;
+    }
+
+    protected function assertVisibleKpi(int $kpiId): KpiDefinition
+    {
+        $kpi = KpiDefinition::visibleTo(Auth::user())->findOrFail($kpiId);
+
+        return $kpi;
     }
 }

@@ -8,7 +8,7 @@
           <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
             <span class="text-white text-sm font-bold">K</span>
           </div>
-          <span class="font-bold text-gray-900 dark:text-white text-lg">KPI Tool</span>
+          <span class="font-bold text-gray-900 dark:text-white text-lg">Allocore Hub</span>
         </div>
         <div class="flex items-center gap-3">
           <a v-if="auth?.user" href="/dashboard" class="px-5 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors">
@@ -139,7 +139,7 @@
           <div class="w-6 h-6 bg-blue-600 rounded-md flex items-center justify-center">
             <span class="text-white text-[10px] font-bold">K</span>
           </div>
-          <span class="text-sm text-gray-500 dark:text-gray-400">KPI Tool</span>
+          <span class="text-sm text-gray-500 dark:text-gray-400">Allocore Hub</span>
         </div>
         <div class="text-sm text-gray-400 dark:text-gray-500">
           {{ $t('welcome.footer_tech') }}

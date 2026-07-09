@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\KpiDefinition;
 use App\Models\KpiValue;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -11,6 +12,8 @@ class KpiValueController extends Controller
 {
     public function store(Request $request, KpiDefinition $kpi)
     {
+        $this->authorizeEditable($kpi);
+
         $validated = $request->validate([
             'value' => ['required', 'numeric'],
             'recorded_at' => ['required', 'date'],
@@ -32,6 +35,8 @@ class KpiValueController extends Controller
 
     public function import(Request $request, KpiDefinition $kpi)
     {
+        $this->authorizeEditable($kpi);
+
         $request->validate([
             'csv_file' => ['required', 'file', 'mimes:csv,txt', 'max:2048'],
         ]);
@@ -42,16 +47,20 @@ class KpiValueController extends Controller
         $imported = 0;
 
         while (($row = fgetcsv($handle)) !== false) {
-            if (count($row) < 2) continue;
+            if (count($row) < 2) {
+                continue;
+            }
 
             $date = trim($row[0]);
             $value = trim($row[1]);
             $notes = isset($row[2]) ? trim($row[2]) : null;
 
-            if (!is_numeric($value)) continue;
+            if (! is_numeric($value)) {
+                continue;
+            }
 
             try {
-                $recordedAt = \Carbon\Carbon::parse($date)->format('Y-m-d');
+                $recordedAt = Carbon::parse($date)->format('Y-m-d');
             } catch (\Exception $e) {
                 continue;
             }
@@ -79,20 +88,48 @@ class KpiValueController extends Controller
         return redirect()->back()->with('success', "{$imported} values imported");
     }
 
+    protected function authorizeEditable(KpiDefinition $kpi): void
+    {
+        $user = Auth::user();
+        abort_unless($kpi->company_id === $user->company_id, 403);
+
+        if ($user->canManageCompany()) {
+            return;
+        }
+
+        // Members may only record values for KPIs assigned to them with edit rights.
+        $canEdit = $user->assignedKpis()
+            ->where('kpi_definitions.id', $kpi->id)
+            ->wherePivot('can_edit', true)
+            ->exists();
+
+        abort_unless($canEdit, 403);
+    }
+
     private function calculateStatus(KpiDefinition $kpi, float $value): string
     {
-        if (!$kpi->target_value) {
+        if (! $kpi->target_value) {
             return 'on_target';
         }
 
         if ($kpi->direction === 'higher_better') {
-            if ($kpi->critical_threshold && $value <= $kpi->critical_threshold) return 'critical';
-            if ($kpi->warning_threshold && $value <= $kpi->warning_threshold) return 'warning';
+            if ($kpi->critical_threshold && $value <= $kpi->critical_threshold) {
+                return 'critical';
+            }
+            if ($kpi->warning_threshold && $value <= $kpi->warning_threshold) {
+                return 'warning';
+            }
+
             return 'on_target';
         }
 
-        if ($kpi->critical_threshold && $value >= $kpi->critical_threshold) return 'critical';
-        if ($kpi->warning_threshold && $value >= $kpi->warning_threshold) return 'warning';
+        if ($kpi->critical_threshold && $value >= $kpi->critical_threshold) {
+            return 'critical';
+        }
+        if ($kpi->warning_threshold && $value >= $kpi->warning_threshold) {
+            return 'warning';
+        }
+
         return 'on_target';
     }
 }

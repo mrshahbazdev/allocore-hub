@@ -14,6 +14,8 @@ class KpiValue extends Model
         'notes',
         'recorded_by',
         'status',
+        'source',
+        'external_ref',
     ];
 
     protected $casts = [

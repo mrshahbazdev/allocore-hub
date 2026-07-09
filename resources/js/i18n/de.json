@@ -1,6 +1,6 @@
 {
   "app": {
-    "name": "KPI Tool",
+    "name": "Allocore Hub",
     "tagline": "Ihr KPI-Management auf einen Blick"
   },
   "nav": {
@@ -9,6 +9,8 @@
     "spreadsheet": "Tabelle",
     "definitions": "Definitionen",
     "templates": "Vorlagen",
+    "tools": "Werkzeuge",
+    "team": "Team",
     "profile": "Profil"
   },
   "common": {
@@ -113,6 +115,7 @@
     "email": "E-Mail",
     "password": "Passwort",
     "name": "Name",
+    "company_name": "Firmenname",
     "confirm_password": "Passwort bestätigen",
     "remember_me": "Angemeldet bleiben",
     "forgot_password": "Passwort vergessen?",
@@ -145,7 +148,7 @@
     "delete_confirm_desc": "Sobald Ihr Konto gelöscht wird, werden alle Ressourcen und Daten dauerhaft gelöscht. Bitte geben Sie Ihr Passwort ein, um die Löschung zu bestätigen."
   },
   "welcome": {
-    "title": "KPI Tool — Professionelles KPI-Management",
+    "title": "Allocore Hub — Professionelles KPI-Management",
     "badge": "Zweisprachig DE/EN",
     "hero_title_1": "Verfolgen Sie Ihre",
     "hero_title_2": "wie ein Profi",

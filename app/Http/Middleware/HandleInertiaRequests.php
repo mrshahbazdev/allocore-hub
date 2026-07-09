@@ -29,11 +29,15 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        $user = $request->user();
+
         return [
             ...parent::share($request),
             'locale' => session('locale', config('app.locale', 'de')),
             'auth' => [
-                'user' => $request->user(),
+                'user' => $user,
+                'company' => $user?->company?->only(['id', 'name', 'slug', 'plan']),
+                'can_manage' => (bool) $user?->canManageCompany(),
             ],
             'flash' => [
                 'success' => $request->session()->get('success'),

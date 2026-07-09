@@ -1,6 +1,6 @@
 {
   "app": {
-    "name": "KPI Tool",
+    "name": "Allocore Hub",
     "tagline": "Your KPI Management at a Glance"
   },
   "nav": {
@@ -9,6 +9,8 @@
     "spreadsheet": "Spreadsheet",
     "definitions": "Definitions",
     "templates": "Templates",
+    "tools": "Tools",
+    "team": "Team",
     "profile": "Profile"
   },
   "common": {
@@ -113,6 +115,7 @@
     "email": "Email",
     "password": "Password",
     "name": "Name",
+    "company_name": "Company name",
     "confirm_password": "Confirm Password",
     "remember_me": "Remember me",
     "forgot_password": "Forgot your password?",
@@ -145,7 +148,7 @@
     "delete_confirm_desc": "Once your account is deleted, all of its resources and data will be permanently deleted. Please enter your password to confirm you would like to permanently delete your account."
   },
   "welcome": {
-    "title": "KPI Tool — Professional KPI Management",
+    "title": "Allocore Hub — Professional KPI Management",
     "badge": "Bilingual DE/EN",
     "hero_title_1": "Track Your",
     "hero_title_2": "Like a Pro",

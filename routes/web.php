@@ -6,12 +6,15 @@ use App\Http\Controllers\KpiSpreadsheetController;
 use App\Http\Controllers\KpiValueController;
 use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\TeamController;
+use App\Http\Controllers\ToolController;
 use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
 
 Route::get('/', function () {
-    return \Inertia\Inertia::render('Welcome', [
-        'canLogin' => \Illuminate\Support\Facades\Route::has('login'),
-        'canRegister' => \Illuminate\Support\Facades\Route::has('register'),
+    return Inertia::render('Welcome', [
+        'canLogin' => Route::has('login'),
+        'canRegister' => Route::has('register'),
     ]);
 });
 
@@ -44,6 +47,19 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/kpis/spreadsheet/actuals', [KpiSpreadsheetController::class, 'storeActuals'])->name('kpis.spreadsheet.actuals');
     Route::post('/kpis/spreadsheet/generate-targets', [KpiSpreadsheetController::class, 'generateTargets'])->name('kpis.spreadsheet.generate-targets');
     Route::get('/kpis/spreadsheet/export', [KpiSpreadsheetController::class, 'export'])->name('kpis.spreadsheet.export');
+
+    // Tools (Allocore connections)
+    Route::get('/tools', [ToolController::class, 'index'])->name('tools.index');
+    Route::post('/tools/connect', [ToolController::class, 'connect'])->name('tools.connect');
+    Route::post('/tools/{tool}/regenerate', [ToolController::class, 'regenerate'])->name('tools.regenerate');
+    Route::post('/tools/{tool}/toggle', [ToolController::class, 'toggle'])->name('tools.toggle');
+    Route::delete('/tools/{tool}', [ToolController::class, 'destroy'])->name('tools.destroy');
+
+    // Team (users + KPI assignment)
+    Route::get('/team', [TeamController::class, 'index'])->name('team.index');
+    Route::post('/team', [TeamController::class, 'store'])->name('team.store');
+    Route::post('/team/{user}/assign', [TeamController::class, 'assign'])->name('team.assign');
+    Route::delete('/team/{user}', [TeamController::class, 'destroy'])->name('team.destroy');
 
     // Profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
