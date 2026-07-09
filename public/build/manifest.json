@@ -275,7 +275,7 @@
     ]
   },
   "resources/js/Pages/Welcome.vue": {
-    "file": "assets/Welcome-9u4Ncez1.js",
+    "file": "assets/Welcome-BFf6pCNr.js",
     "name": "Welcome",
     "src": "resources/js/Pages/Welcome.vue",
     "isDynamicEntry": true,
@@ -284,7 +284,7 @@
     ]
   },
   "resources/js/app.js": {
-    "file": "assets/app-C11MqrH-.js",
+    "file": "assets/app-rRB1avcN.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true,
@@ -315,7 +315,7 @@
       "resources/js/Pages/Welcome.vue"
     ],
     "css": [
-      "assets/app-Dztv0eJe.css"
+      "assets/app-BZ15W7RS.css"
     ]
   }
 }
