@@ -38,9 +38,12 @@ class ToolController extends Controller
             ];
         })->values();
 
+        $hubUrl = rtrim(config('allocore.hub_url') ?: config('app.url'), '/');
+
         return Inertia::render('Tools/Index', [
             'tools' => $tools,
-            'ingestUrl' => rtrim(config('allocore.hub_url') ?: config('app.url'), '/').'/api/allocore/kpi/ingest',
+            'hubUrl' => $hubUrl,
+            'ingestUrl' => $hubUrl.'/api/allocore/kpi/ingest',
             'revealedKey' => $request->session()->get('revealed_key'),
             'revealedTool' => $request->session()->get('revealed_tool'),
         ]);
