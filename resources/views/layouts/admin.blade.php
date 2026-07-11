@@ -88,6 +88,10 @@
         .badge-admin { background: rgba(220,38,38,0.15); color: #f87171; border: 1px solid rgba(220,38,38,0.3); }
         .badge-analyst { background: rgba(99,102,241,0.15); color: #818cf8; border: 1px solid rgba(99,102,241,0.3); }
         .badge-viewer { background: rgba(100,116,139,0.15); color: #94a3b8; border: 1px solid rgba(100,116,139,0.3); }
+        .lang-switcher { display: flex; gap: 6px; }
+        .lang-switcher a { font-size: 11px; font-weight: 600; color: #94a3b8; text-decoration: none; padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1); }
+        .lang-switcher a.active { background: rgba(220,38,38,0.15); color: #f87171; border-color: rgba(220,38,38,0.3); }
+        .lang-switcher a:hover { color: #e2e8f0; }
 
         @media (max-width: 1024px) {
             .sidebar {
@@ -158,6 +162,10 @@
     <div class="topbar">
         <button type="button" class="menu-toggle" id="menuToggle" aria-label="{{ __('Toggle navigation') }}">☰</button>
         <div class="topbar-title">@yield('page-title', __('Admin'))</div>
+        <div class="lang-switcher" style="margin-right:10px;">
+            <a href="{{ route('locale.switch', 'de') }}" class="{{ app()->getLocale() === 'de' ? 'active' : '' }}">DE</a>
+            <a href="{{ route('locale.switch', 'en') }}" class="{{ app()->getLocale() === 'en' ? 'active' : '' }}">EN</a>
+        </div>
         <div>@yield('topbar-actions')</div>
     </div>
     <div class="page">
