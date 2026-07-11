@@ -7,6 +7,7 @@ use App\Http\Controllers\ExcelImportController;
 use App\Http\Controllers\GmbhAnalyseController;
 use App\Http\Controllers\ImmobilienController;
 use App\Http\Controllers\JahresabschlussController;
+use App\Http\Controllers\KeywordCluster\ProjectController;
 use App\Http\Controllers\LeadController;
 use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\PaypalController;
@@ -71,6 +72,19 @@ Route::middleware(['auth', 'verified', 'company'])->group(function () {
         Route::get('/immobilien/{immobilien}', [ImmobilienController::class, 'show'])->name('immobilien.show');
         Route::delete('/immobilien/{immobilien}', [ImmobilienController::class, 'destroy'])->name('immobilien.destroy');
         Route::get('/immobilien/{immobilien}/pdf', [ImmobilienController::class, 'exportPdf'])->name('immobilien.pdf');
+    });
+
+    // Keyword Cluster
+    Route::middleware(['auth', 'verified', 'company', 'tool.access:keyword-cluster'])->prefix('keyword-cluster')->name('keyword-cluster.')->group(function () {
+        Route::get('/', [ProjectController::class, 'index'])->name('index');
+        Route::get('/create', [ProjectController::class, 'create'])->name('create');
+        Route::post('/', [ProjectController::class, 'store'])->name('store');
+        Route::get('/{project}', [ProjectController::class, 'show'])->name('show');
+        Route::get('/{project}/status', [ProjectController::class, 'status'])->name('status');
+        Route::post('/{project}/retry', [ProjectController::class, 'retry'])->name('retry');
+        Route::delete('/{project}', [ProjectController::class, 'destroy'])->name('destroy');
+        Route::get('/{project}/export/pillar', [ProjectController::class, 'exportPillar'])->name('export.pillar');
+        Route::get('/{project}/export/cluster/{subtopic}', [ProjectController::class, 'exportCluster'])->name('export.cluster');
     });
 
     // Analyses History (all tools)
