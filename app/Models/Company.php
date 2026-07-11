@@ -54,6 +54,11 @@ class Company extends Model
         return $this->hasMany(Analysis::class);
     }
 
+    public function keywordProjects(): HasMany
+    {
+        return $this->hasMany(KeywordProject::class);
+    }
+
     public function audits(): HasMany
     {
         return $this->hasMany(Audit::class);

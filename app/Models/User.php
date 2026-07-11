@@ -98,6 +98,11 @@ class User extends Authenticatable
         return $this->hasMany(Analysis::class);
     }
 
+    public function keywordProjects(): HasMany
+    {
+        return $this->hasMany(KeywordProject::class);
+    }
+
     public function leads(): HasMany
     {
         return $this->hasMany(Lead::class);
