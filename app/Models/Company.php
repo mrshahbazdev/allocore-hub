@@ -59,6 +59,11 @@ class Company extends Model
         return $this->hasMany(KeywordProject::class);
     }
 
+    public function audits(): HasMany
+    {
+        return $this->hasMany(Audit::class);
+    }
+
     public function tools(): BelongsToMany
     {
         return $this->belongsToMany(Tool::class, 'company_tool')
