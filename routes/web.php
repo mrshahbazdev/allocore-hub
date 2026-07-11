@@ -7,7 +7,9 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ExcelImportController;
 use App\Http\Controllers\GmbhAnalyseController;
 use App\Http\Controllers\ImmobilienController;
+use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\JahresabschlussController;
+use App\Http\Controllers\KeywordCluster\ProjectController;
 use App\Http\Controllers\LeadController;
 use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\PaypalController;
@@ -17,6 +19,10 @@ use App\Livewire\AuditCompare;
 use App\Livewire\AuditList;
 use App\Livewire\AuditTemplateBuilder;
 use App\Livewire\AuditTemplates;
+use App\Livewire\Invoice\Create as InvoiceCreate;
+use App\Livewire\Invoice\Edit as InvoiceEdit;
+use App\Livewire\Invoice\Index as InvoiceIndex;
+use App\Livewire\Invoice\Show as InvoiceShow;
 use App\Models\Analysis;
 use Illuminate\Support\Facades\Route;
 
@@ -92,6 +98,19 @@ Route::middleware(['auth', 'verified', 'company'])->group(function () {
         Route::delete('/{audit}', [AuditController::class, 'destroy'])->name('destroy');
     });
 
+    // Keyword Cluster
+    Route::middleware(['auth', 'verified', 'company', 'tool.access:keyword-cluster'])->prefix('keyword-cluster')->name('keyword-cluster.')->group(function () {
+        Route::get('/', [ProjectController::class, 'index'])->name('index');
+        Route::get('/create', [ProjectController::class, 'create'])->name('create');
+        Route::post('/', [ProjectController::class, 'store'])->name('store');
+        Route::get('/{project}', [ProjectController::class, 'show'])->name('show');
+        Route::get('/{project}/status', [ProjectController::class, 'status'])->name('status');
+        Route::post('/{project}/retry', [ProjectController::class, 'retry'])->name('retry');
+        Route::delete('/{project}', [ProjectController::class, 'destroy'])->name('destroy');
+        Route::get('/{project}/export/pillar', [ProjectController::class, 'exportPillar'])->name('export.pillar');
+        Route::get('/{project}/export/cluster/{subtopic}', [ProjectController::class, 'exportCluster'])->name('export.cluster');
+    });
+
     // Analyses History (all tools)
     Route::get('/analyses', function () {
         $company = auth()->user()?->currentCompany();
@@ -122,6 +141,15 @@ Route::middleware(['auth', 'verified', 'company'])->group(function () {
     Route::get('/paypal/capture', [PaypalController::class, 'capture'])->name('paypal.capture');
     Route::get('/paypal/cancel', [PaypalController::class, 'cancel'])->name('paypal.cancel');
     Route::get('/paypal/{transaction}', [PaypalController::class, 'show'])->name('paypal.show');
+
+    // Invoice Module
+    Route::middleware(['auth', 'verified', 'company', 'tool.access:invoice'])->prefix('invoice')->name('invoice.')->group(function () {
+        Route::get('/', InvoiceIndex::class)->name('index');
+        Route::get('/create', InvoiceCreate::class)->name('create');
+        Route::get('/{invoice}', InvoiceShow::class)->name('show');
+        Route::get('/{invoice}/edit', InvoiceEdit::class)->name('edit');
+        Route::get('/{invoice}/pdf', [InvoiceController::class, 'pdf'])->name('pdf');
+    });
 });
 
 // ─── Admin Routes ───────────────────────────────────────────────────
