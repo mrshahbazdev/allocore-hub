@@ -1,6 +1,6 @@
 @extends('layouts.app')
-@section('title', 'Alle Analysen — Allocore')
-@section('page-title', '📋 Alle Analysen')
+@section('title', __('All Analyses') . ' — Allocore')
+@section('page-title', '📋 ' . __('All Analyses'))
 @push('styles')
 <style>
     .analyses-card {
@@ -20,7 +20,7 @@
     <div class="analyses-table-wrap">
     <table class="data-table">
         <thead>
-            <tr><th>Analyse</th><th>Unternehmen</th><th>Typ</th><th>Score</th><th>Status</th><th>Datum</th><th></th></tr>
+            <tr><th>{{ __('Analysis') }}</th><th>{{ __('Company') }}</th><th>{{ __('Type') }}</th><th>{{ __('Score') }}</th><th>{{ __('Status') }}</th><th>{{ __('Date') }}</th><th></th></tr>
         </thead>
         <tbody>
             @forelse($analyses as $a)
@@ -40,11 +40,11 @@
                 <td><span class="badge badge-{{ $a->status === 'complete' ? 'green' : 'gray' }}">{{ $a->status }}</span></td>
                 <td style="font-size:12px; color:#475569;">{{ $a->created_at->format('d.m.Y') }}</td>
                 <td>
-                    <a href="{{ route($a->type . '.show', $a) }}" class="btn btn-secondary btn-sm">→ Öffnen</a>
+                    <a href="{{ route($a->type . '.show', $a) }}" class="btn btn-secondary btn-sm">→ {{ __('Open') }}</a>
                 </td>
             </tr>
             @empty
-            <tr><td colspan="7" style="text-align:center; color:#475569; padding:40px;">Keine Analysen vorhanden.</td></tr>
+            <tr><td colspan="7" style="text-align:center; color:#475569; padding:40px;">{{ __('No analyses available.') }}</td></tr>
             @endforelse
         </tbody>
     </table>

@@ -162,5 +162,10 @@
     "Information": "Informationen",
     "Analyses": "Analysen",
     "Created": "Erstellt",
-    "No analyses for this company yet.": "Noch keine Analysen für dieses Unternehmen."
+    "No analyses for this company yet.": "Noch keine Analysen für dieses Unternehmen.",
+    "All Analyses": "Alle Analysen",
+    "Status": "Status",
+    "Open": "Öffnen",
+    "No analyses available.": "Keine Analysen vorhanden.",
+    "Analysis": "Analyse"
 }

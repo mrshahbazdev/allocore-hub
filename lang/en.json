@@ -162,5 +162,10 @@
     "Information": "Information",
     "Analyses": "Analyses",
     "Created": "Created",
-    "No analyses for this company yet.": "No analyses for this company yet."
+    "No analyses for this company yet.": "No analyses for this company yet.",
+    "All Analyses": "All Analyses",
+    "Status": "Status",
+    "Open": "Open",
+    "No analyses available.": "No analyses available.",
+    "Analysis": "Analysis"
 }
