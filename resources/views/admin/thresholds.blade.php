@@ -1,31 +1,30 @@
 @extends('layouts.admin')
-@section('title', 'KPI-Schwellwerte — Allocore Admin')
-@section('page-title', '⚙ KPI-Schwellwerte konfigurieren')
+@section('title', __('KPI Thresholds') . ' — Allocore Admin')
+@section('page-title', '⚙ ' . __('Configure KPI thresholds'))
 
 @section('content')
 
 <div style="font-size:12px; color:#64748b; margin-bottom:20px; line-height:1.6; background:rgba(220,38,38,0.05); border:1px solid rgba(220,38,38,0.15); padding:12px 16px; border-radius:8px;">
-    ⚠ Schwellwerte steuern das Traffic-Light-System. Änderungen wirken sich auf <strong>neue</strong> Berechnungen aus.
-    Bestehende KPI-Ergebnisse müssen neu berechnet werden.
+    ⚠ {{ __('Thresholds control the traffic-light system. Changes only affect new calculations. Existing KPI results must be recalculated.') }}
 </div>
 
 @foreach($grouped as $tool => $thresholds)
 <div class="card" style="margin-bottom:16px;">
     <div class="card-title" style="margin-bottom:18px;">
         @php $icons = ['gmbh'=>'📊','jahresabschluss'=>'📈','immobilien'=>'🏘']; @endphp
-        {{ $icons[$tool] ?? '📋' }} {{ ucfirst($tool) }} KPIs ({{ $thresholds->count() }})
+        {{ $icons[$tool] ?? '📋' }} {{ ucfirst($tool) }} {{ __('KPIs') }} ({{ $thresholds->count() }})
     </div>
 
     <table class="data-table">
         <thead>
             <tr>
-                <th style="width:140px;">KPI</th>
-                <th>Einheit</th>
-                <th>Grün ab/bis</th>
-                <th>Gelb ab/bis</th>
-                <th>Gewicht</th>
-                <th>Lower=Better</th>
-                <th>Aktiv</th>
+                <th style="width:140px;">{{ __('KPI') }}</th>
+                <th>{{ __('Unit') }}</th>
+                <th>{{ __('Good') }}</th>
+                <th>{{ __('Warning') }}</th>
+                <th>{{ __('Weight') }}</th>
+                <th>{{ __('Lower is better') }}</th>
+                <th>{{ __('Active') }}</th>
                 <th></th>
             </tr>
         </thead>
@@ -41,16 +40,16 @@
                 <form method="POST" action="{{ route('admin.thresholds.update', $t) }}" id="form-{{ $t->id }}">
                 @csrf @method('PATCH')
                 @if($t->lower_is_better)
-                    <input type="number" step="0.01" name="green_max" class="form-control" style="width:80px;" value="{{ $t->green_max }}" title="Grün MAX">
+                    <input type="number" step="0.01" name="green_max" class="form-control" style="width:80px;" value="{{ $t->green_max }}" title="{{ __('Green') }} {{ __('MAX') }}">
                 @else
-                    <input type="number" step="0.01" name="green_min" class="form-control" style="width:80px;" value="{{ $t->green_min }}" title="Grün MIN">
+                    <input type="number" step="0.01" name="green_min" class="form-control" style="width:80px;" value="{{ $t->green_min }}" title="{{ __('Green') }} {{ __('MIN') }}">
                 @endif
             </td>
             <td>
                 @if($t->lower_is_better)
-                    <input type="number" step="0.01" name="yellow_max" class="form-control" style="width:80px;" value="{{ $t->yellow_max }}" title="Gelb MAX">
+                    <input type="number" step="0.01" name="yellow_max" class="form-control" style="width:80px;" value="{{ $t->yellow_max }}" title="{{ __('Yellow') }} {{ __('MAX') }}">
                 @else
-                    <input type="number" step="0.01" name="yellow_min" class="form-control" style="width:80px;" value="{{ $t->yellow_min }}" title="Gelb MIN">
+                    <input type="number" step="0.01" name="yellow_min" class="form-control" style="width:80px;" value="{{ $t->yellow_min }}" title="{{ __('Yellow') }} {{ __('MIN') }}">
                 @endif
             </td>
             <td>

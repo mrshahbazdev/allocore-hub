@@ -1,15 +1,15 @@
 @extends('layouts.admin')
-@section('title', 'Benutzer — Allocore Admin')
-@section('page-title', '👥 Benutzerverwaltung')
+@section('title', __('Users') . ' — Allocore Admin')
+@section('page-title', '👥 ' . __('User Management'))
 
 @section('content')
 <div class="card">
     <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;">
-        <div class="card-title" style="margin:0;">{{ $users->total() }} Benutzer registriert</div>
+        <div class="card-title" style="margin:0;">{{ $users->total() }} {{ __('Users registered') }}</div>
     </div>
     <table class="data-table">
         <thead>
-            <tr><th>Name</th><th>E-Mail</th><th>Aktuelle Rolle</th><th>Analysen</th><th>Registriert</th><th>Rolle ändern</th></tr>
+            <tr><th>{{ __('Name') }}</th><th>{{ __('Email') }}</th><th>{{ __('Current role') }}</th><th>{{ __('Analyses') }}</th><th>{{ __('Registered') }}</th><th>{{ __('Change role') }}</th></tr>
         </thead>
         <tbody>
         @foreach($users as $u)
@@ -34,7 +34,7 @@
                     <button type="submit" class="btn btn-primary btn-sm">✓</button>
                 </form>
                 @else
-                    <span style="font-size:11px; color:#475569;">Du selbst</span>
+                    <span style="font-size:11px; color:#475569;">{{ __('Yourself') }}</span>
                 @endif
             </td>
         </tr>

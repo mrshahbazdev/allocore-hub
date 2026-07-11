@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Admin Panel — Allocore')</title>
+    <title>@yield('title', __('Admin Panel') . ' — Allocore')</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -131,33 +131,33 @@
 <div class="mobile-overlay" id="mobileOverlay"></div>
 <aside class="sidebar">
     <div class="sidebar-logo">
-        <h2>🛡 Admin Panel</h2>
+        <h2>🛡 {{ __('Admin Panel') }}</h2>
         <p>Allocore Financial Platform</p>
     </div>
     <nav class="sidebar-nav">
-        <div class="nav-label">Verwaltung</div>
-        <a href="{{ route('admin.index') }}" class="nav-item {{ request()->routeIs('admin.index') ? 'active' : '' }}">📊 Dashboard</a>
-        <a href="{{ route('admin.users') }}" class="nav-item {{ request()->routeIs('admin.users') ? 'active' : '' }}">👥 Benutzer</a>
-        <a href="{{ route('admin.thresholds') }}" class="nav-item {{ request()->routeIs('admin.thresholds') ? 'active' : '' }}">⚙ KPI-Schwellwerte</a>
-        <a href="{{ route('admin.invoicemaker') }}" class="nav-item {{ request()->routeIs('admin.invoicemaker') ? 'active' : '' }}">🧾 Invoice Maker</a>
-        <div class="nav-label" style="margin-top:12px;">Navigation</div>
-        <a href="{{ route('dashboard') }}" class="nav-item">🏠 Zur App</a>
-        <a href="{{ route('analyses.index') }}" class="nav-item">📋 Alle Analysen</a>
+        <div class="nav-label">{{ __('Administration') }}</div>
+        <a href="{{ route('admin.index') }}" class="nav-item {{ request()->routeIs('admin.index') ? 'active' : '' }}">📊 {{ __('Dashboard') }}</a>
+        <a href="{{ route('admin.users') }}" class="nav-item {{ request()->routeIs('admin.users') ? 'active' : '' }}">👥 {{ __('Users') }}</a>
+        <a href="{{ route('admin.thresholds') }}" class="nav-item {{ request()->routeIs('admin.thresholds') ? 'active' : '' }}">⚙ {{ __('KPI Thresholds') }}</a>
+        <a href="{{ route('admin.invoicemaker') }}" class="nav-item {{ request()->routeIs('admin.invoicemaker') ? 'active' : '' }}">🧾 {{ __('Invoice Maker') }}</a>
+        <div class="nav-label" style="margin-top:12px;">{{ __('Navigation') }}</div>
+        <a href="{{ route('dashboard') }}" class="nav-item">🏠 {{ __('Back to app') }}</a>
+        <a href="{{ route('analyses.index') }}" class="nav-item">📋 {{ __('All Analyses') }}</a>
     </nav>
     <div class="sidebar-footer">
         <div style="font-size:11px; color:#64748b; margin-bottom:8px;">
-            Angemeldet als <strong style="color:#f87171;">{{ Auth::user()->name }}</strong>
+            {{ __('Logged in as') }} <strong style="color:#f87171;">{{ Auth::user()->name }}</strong>
         </div>
         <form method="POST" action="{{ route('logout') }}">
             @csrf
-            <button type="submit" class="btn btn-secondary" style="width:100%; justify-content:center; font-size:11px;">🚪 Abmelden</button>
+            <button type="submit" class="btn btn-secondary" style="width:100%; justify-content:center; font-size:11px;">🚪 {{ __('Sign out') }}</button>
         </form>
     </div>
 </aside>
 <div class="main">
     <div class="topbar">
-        <button type="button" class="menu-toggle" id="menuToggle" aria-label="Navigation umschalten">☰</button>
-        <div class="topbar-title">@yield('page-title', 'Admin')</div>
+        <button type="button" class="menu-toggle" id="menuToggle" aria-label="{{ __('Toggle navigation') }}">☰</button>
+        <div class="topbar-title">@yield('page-title', __('Admin'))</div>
         <div>@yield('topbar-actions')</div>
     </div>
     <div class="page">

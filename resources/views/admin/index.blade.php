@@ -1,17 +1,17 @@
 @extends('layouts.admin')
-@section('title', 'Admin Dashboard — Allocore')
-@section('page-title', '📊 Admin Dashboard')
+@section('title', __('Admin Dashboard') . ' — Allocore')
+@section('page-title', '📊 ' . __('Admin Dashboard'))
 
 @section('content')
 
 {{-- Stats Grid --}}
 <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:14px; margin-bottom:22px;">
     @foreach([
-        ['👥 Benutzer', $stats['users'], 'Users', '#f87171'],
-        ['📋 Analysen Gesamt', $stats['analyses'], 'Analyses', '#818cf8'],
-        ['🏢 Unternehmen', $stats['companies'], 'Companies', '#34d399'],
-        ['✅ Abgeschlossen', $stats['complete'], 'Complete', '#fbbf24'],
-    ] as [$label, $val, $sub, $clr])
+        ['👥 ' . __('Users'), $stats['users'], '#f87171'],
+        ['📋 ' . __('Analyses') . ' ' . __('Total'), $stats['analyses'], '#818cf8'],
+        ['🏢 ' . __('Companies'), $stats['companies'], '#34d399'],
+        ['✅ ' . __('Complete'), $stats['complete'], '#fbbf24'],
+    ] as [$label, $val, $clr])
     <div class="card" style="border-color:{{ $clr }}30;">
         <div style="font-size:10px; color:#64748b; margin-bottom:6px;">{{ $label }}</div>
         <div style="font-size:34px; font-weight:700; color:{{ $clr }};">{{ $val }}</div>
@@ -21,11 +21,11 @@
 
 {{-- Tool breakdown --}}
 <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:22px;">
-    @foreach([['📊 GmbH', $stats['gmbh'],'#818cf8'],['📈 Jahresabschluss', $stats['jahrabs'],'#fbbf24'],['🏘 Immobilien', $stats['immobilien'],'#c084fc']] as [$t,$v,$c])
+    @foreach([['📊 ' . __('GmbH Analyses'), $stats['gmbh'],'#818cf8'],['📈 ' . __('Financial Statements'), $stats['jahrabs'],'#fbbf24'],['🏘 ' . __('Real Estate'), $stats['immobilien'],'#c084fc']] as [$t,$v,$c])
     <div class="card" style="text-align:center; padding:14px; border-color:{{ $c }}25;">
         <div style="font-size:10px; color:#64748b; margin-bottom:4px;">{{ $t }}</div>
         <div style="font-size:28px; font-weight:700; color:{{ $c }};">{{ $v }}</div>
-        <div style="font-size:10px; color:#475569; margin-top:2px;">Analysen</div>
+        <div style="font-size:10px; color:#475569; margin-top:2px;">{{ __('Analyses') }}</div>
     </div>
     @endforeach
 </div>
@@ -34,9 +34,9 @@
 
     {{-- Recent Users --}}
     <div class="card">
-        <div class="card-title">👥 Neueste Benutzer</div>
+        <div class="card-title">👥 {{ __('Recent Users') }}</div>
         <table class="data-table">
-            <thead><tr><th>Name</th><th>E-Mail</th><th>Rolle</th><th>Seit</th></tr></thead>
+            <thead><tr><th>{{ __('Name') }}</th><th>{{ __('Email') }}</th><th>{{ __('Role') }}</th><th>{{ __('Since') }}</th></tr></thead>
             <tbody>
             @foreach($recentUsers as $u)
             <tr>
@@ -52,15 +52,15 @@
             </tbody>
         </table>
         <div style="margin-top:12px;">
-            <a href="{{ route('admin.users') }}" class="btn btn-secondary btn-sm">Alle Benutzer →</a>
+            <a href="{{ route('admin.users') }}" class="btn btn-secondary btn-sm">{{ __('All Users') }} →</a>
         </div>
     </div>
 
     {{-- Top Analyses by Score --}}
     <div class="card">
-        <div class="card-title">🏆 Top-Analysen (nach Score)</div>
+        <div class="card-title">🏆 {{ __('Top Analyses') }} ({{ __('by Score') }})</div>
         <table class="data-table">
-            <thead><tr><th>Analyse</th><th>Typ</th><th>User</th><th>Score</th></tr></thead>
+            <thead><tr><th>{{ __('Analysis') }}</th><th>{{ __('Type') }}</th><th>{{ __('User') }}</th><th>{{ __('Score') }}</th></tr></thead>
             <tbody>
             @foreach($topAnalyses as $a)
             <tr>
@@ -79,7 +79,7 @@
             </tbody>
         </table>
         <div style="margin-top:12px;">
-            <a href="{{ route('analyses.index') }}" class="btn btn-secondary btn-sm">Alle Analysen →</a>
+            <a href="{{ route('analyses.index') }}" class="btn btn-secondary btn-sm">{{ __('All Analyses') }} →</a>
         </div>
     </div>
 
