@@ -2,34 +2,31 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
-use Illuminate\Database\Eloquent\Attributes\Fillable;
-use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
+use Spatie\Permission\Traits\HasRoles;
 
-#[Fillable(['name', 'email', 'password', 'company_id', 'role'])]
-#[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, HasRoles, Notifiable;
 
-    public const ROLE_OWNER = 'owner';
+    protected $fillable = [
+        'name',
+        'email',
+        'password',
+    ];
 
-    public const ROLE_MANAGER = 'manager';
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
 
-    public const ROLE_MEMBER = 'member';
-
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
@@ -38,38 +35,76 @@ class User extends Authenticatable
         ];
     }
 
-    public function company(): BelongsTo
+    public function ownedCompanies(): HasMany
     {
-        return $this->belongsTo(Company::class);
+        return $this->hasMany(Company::class, 'user_id');
     }
 
-    public function assignedKpis(): BelongsToMany
+    public function companies(): BelongsToMany
     {
-        return $this->belongsToMany(KpiDefinition::class, 'kpi_user_assignments')
-            ->withPivot('can_edit')
+        return $this->belongsToMany(Company::class, 'company_user')
+            ->withPivot('role', 'is_default', 'invited_at', 'accepted_at')
             ->withTimestamps();
     }
 
-    public function isOwner(): bool
+    public function currentCompany(): ?Company
     {
-        return $this->role === self::ROLE_OWNER;
+        $companyId = session('current_company');
+
+        if ($companyId) {
+            $company = $this->companies()->where('companies.id', $companyId)->first();
+            if ($company) {
+                return $company;
+            }
+        }
+
+        $company = $this->companies()->wherePivot('is_default', true)->first()
+            ?? $this->companies()->first();
+
+        if ($company) {
+            session(['current_company' => $company->id]);
+        }
+
+        return $company;
     }
 
-    public function isManager(): bool
+    public function setCurrentCompany(?Company $company): void
     {
-        return $this->role === self::ROLE_MANAGER;
+        if ($company && $this->companies()->where('companies.id', $company->id)->exists()) {
+            session(['current_company' => $company->id]);
+        }
     }
 
-    public function isMember(): bool
+    public function companyRole(?Company $company = null): ?string
     {
-        return $this->role === self::ROLE_MEMBER;
+        $company ??= $this->currentCompany();
+
+        if (! $company) {
+            return null;
+        }
+
+        return $company->userRole($this);
     }
 
-    /**
-     * Owners and managers can administer the company (manage tools, users, KPIs).
-     */
-    public function canManageCompany(): bool
+    public function isCompanyAdmin(?Company $company = null): bool
     {
-        return in_array($this->role, [self::ROLE_OWNER, self::ROLE_MANAGER], true);
+        $company ??= $this->currentCompany();
+
+        return $company?->isAdmin($this) ?? false;
+    }
+
+    public function analyses(): HasMany
+    {
+        return $this->hasMany(Analysis::class);
+    }
+
+    public function leads(): HasMany
+    {
+        return $this->hasMany(Lead::class);
+    }
+
+    public function paypalTransactions(): HasMany
+    {
+        return $this->hasMany(PaypalTransaction::class);
     }
 }

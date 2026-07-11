@@ -1,12 +1,15 @@
 <?php
 
-use App\Http\Middleware\AllocoreAuth;
-use App\Http\Middleware\HandleInertiaRequests;
+use App\Http\Middleware\CompanyAdmin;
+use App\Http\Middleware\CompanyCanAccessTool;
+use App\Http\Middleware\SetCurrentCompany;
+use App\Http\Middleware\SetLocale;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
-use Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets;
-use Illuminate\Http\Request;
+use Spatie\Permission\Middleware\PermissionMiddleware;
+use Spatie\Permission\Middleware\RoleMiddleware;
+use Spatie\Permission\Middleware\RoleOrPermissionMiddleware;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -16,20 +19,19 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        $middleware->web(append: [
-            AddLinkHeadersForPreloadedAssets::class,
-        ]);
-
-        $middleware->web(append: [
-            HandleInertiaRequests::class,
-        ]);
-
         $middleware->alias([
-            'allocore' => AllocoreAuth::class,
+            'role' => RoleMiddleware::class,
+            'permission' => PermissionMiddleware::class,
+            'role_or_permission' => RoleOrPermissionMiddleware::class,
+            'company' => SetCurrentCompany::class,
+            'company.admin' => CompanyAdmin::class,
+            'tool.access' => CompanyCanAccessTool::class,
+            'locale' => SetLocale::class,
         ]);
+
+        $middleware->appendToGroup('web', SetCurrentCompany::class);
+        $middleware->appendToGroup('web', SetLocale::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        $exceptions->shouldRenderJsonWhen(
-            fn (Request $request) => $request->is('api/*'),
-        );
+        //
     })->create();
