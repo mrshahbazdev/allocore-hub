@@ -6,12 +6,17 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ExcelImportController;
 use App\Http\Controllers\GmbhAnalyseController;
 use App\Http\Controllers\ImmobilienController;
+use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\JahresabschlussController;
 use App\Http\Controllers\KeywordCluster\ProjectController;
 use App\Http\Controllers\LeadController;
 use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\PaypalController;
 use App\Http\Controllers\ProfileController;
+use App\Livewire\Invoice\Create as InvoiceCreate;
+use App\Livewire\Invoice\Edit as InvoiceEdit;
+use App\Livewire\Invoice\Index as InvoiceIndex;
+use App\Livewire\Invoice\Show as InvoiceShow;
 use App\Models\Analysis;
 use Illuminate\Support\Facades\Route;
 
@@ -117,6 +122,15 @@ Route::middleware(['auth', 'verified', 'company'])->group(function () {
     Route::get('/paypal/capture', [PaypalController::class, 'capture'])->name('paypal.capture');
     Route::get('/paypal/cancel', [PaypalController::class, 'cancel'])->name('paypal.cancel');
     Route::get('/paypal/{transaction}', [PaypalController::class, 'show'])->name('paypal.show');
+
+    // Invoice Module
+    Route::middleware(['auth', 'verified', 'company', 'tool.access:invoice'])->prefix('invoice')->name('invoice.')->group(function () {
+        Route::get('/', InvoiceIndex::class)->name('index');
+        Route::get('/create', InvoiceCreate::class)->name('create');
+        Route::get('/{invoice}', InvoiceShow::class)->name('show');
+        Route::get('/{invoice}/edit', InvoiceEdit::class)->name('edit');
+        Route::get('/{invoice}/pdf', [InvoiceController::class, 'pdf'])->name('pdf');
+    });
 });
 
 // ─── Admin Routes ───────────────────────────────────────────────────

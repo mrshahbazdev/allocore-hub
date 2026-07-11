@@ -32,5 +32,8 @@ class DatabaseSeeder extends Seeder
             User::factory()->raw(['name' => 'Analyst User', 'email' => 'analyst@allocore.de'])
         );
         $analyst->assignRole('Analyst');
+
+        // 5. Invoice Module Demo Data
+        $this->call(InvoiceModuleSeeder::class);
     }
 }
