@@ -3,12 +3,15 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Company;
 use App\Models\User;
+use App\Services\SubscriptionService;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rules;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
@@ -43,6 +46,23 @@ class RegisteredUserController extends Controller
         ]);
 
         event(new Registered($user));
+
+        $company = Company::create([
+            'user_id' => $user->id,
+            'name' => $request->name.' '.__('Workspace'),
+            'slug' => Str::slug($request->name).'-'.Str::random(6),
+            'currency' => 'EUR',
+            'status' => 'active',
+        ]);
+
+        $user->companies()->attach($company->id, [
+            'role' => Company::ROLE_OWNER,
+            'is_default' => true,
+        ]);
+
+        $user->setCurrentCompany($company);
+
+        app(SubscriptionService::class)->createTrial($company);
 
         Auth::login($user);
 
