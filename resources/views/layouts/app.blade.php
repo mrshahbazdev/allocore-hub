@@ -230,6 +230,9 @@
         <a href="{{ route('immobilien.index') }}" class="nav-item {{ request()->routeIs('immobilien.*') ? 'active' : '' }}">
             <span class="icon">🏘</span> {{ __('Real Estate Analysis') }}
         </a>
+        <a href="{{ route('keyword-cluster.index') }}" class="nav-item {{ request()->routeIs('keyword-cluster.*') ? 'active' : '' }}">
+            <span class="icon">🔍</span> {{ __('Keyword Cluster') }}
+        </a>
 
         <div class="nav-label" style="margin-top:16px;">{{ __('Leads & Payments') }}</div>
         <a href="{{ route('leads.index') }}" class="nav-item {{ request()->routeIs('leads.*') ? 'active' : '' }}">
