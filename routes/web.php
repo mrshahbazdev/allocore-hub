@@ -24,6 +24,7 @@ use App\Livewire\Invoice\Edit as InvoiceEdit;
 use App\Livewire\Invoice\Index as InvoiceIndex;
 use App\Livewire\Invoice\Show as InvoiceShow;
 use App\Models\Analysis;
+use App\Models\Tool;
 use Illuminate\Support\Facades\Route;
 
 // ─── Public ────────────────────────────────────────────────────────────────
@@ -32,7 +33,7 @@ Route::get('/', function () {
         return redirect()->route('dashboard');
     }
 
-    return view('welcome');
+    return view('welcome', ['tools' => Tool::where('is_active', true)->orderBy('id')->get()]);
 })->name('home');
 
 Route::get('/locale/{locale}', [LocaleController::class, 'switch'])->name('locale.switch');

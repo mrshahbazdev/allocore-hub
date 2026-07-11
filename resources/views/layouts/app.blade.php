@@ -223,19 +223,16 @@
             <span class="icon">📋</span> {{ __('All Analyses') }}
         </a>
 
-        <div class="nav-label" style="margin-top:16px">{{ __('Analysis Tools') }}</div>
-        <a href="{{ route('gmbh.index') }}" class="nav-item {{ request()->routeIs('gmbh.*') ? 'active' : '' }}">
-            <span class="icon">📊</span> {{ __('GmbH Analysis') }}
-        </a>
-        <a href="{{ route('jahresabschluss.index') }}" class="nav-item {{ request()->routeIs('jahresabschluss.*') ? 'active' : '' }}">
-            <span class="icon">📈</span> {{ __('Financial Statement') }}
-        </a>
-        <a href="{{ route('immobilien.index') }}" class="nav-item {{ request()->routeIs('immobilien.*') ? 'active' : '' }}">
-            <span class="icon">🏘</span> {{ __('Real Estate Analysis') }}
-        </a>
-        <a href="{{ route('keyword-cluster.index') }}" class="nav-item {{ request()->routeIs('keyword-cluster.*') ? 'active' : '' }}">
-            <span class="icon">🔍</span> {{ __('Keyword Cluster') }}
-        </a>
+        @php($company = Auth::user()->currentCompany())
+
+        <div class="nav-label" style="margin-top:16px">{{ __('Tools') }}</div>
+        @foreach (\App\Models\Tool::where('is_active', true)->orderBy('id')->get() as $tool)
+            @if($company?->hasToolAccess($tool->slug))
+                <a href="{{ route($tool->internal_route) }}" class="nav-item {{ request()->routeIs($tool->slug.'.*') ? 'active' : '' }}">
+                    <span class="icon">{{ $tool->icon }}</span> {{ __($tool->name) }}
+                </a>
+            @endif
+        @endforeach
 
         <div class="nav-label" style="margin-top:16px;">{{ __('Leads & Payments') }}</div>
         <a href="{{ route('leads.index') }}" class="nav-item {{ request()->routeIs('leads.*') ? 'active' : '' }}">
@@ -244,11 +241,6 @@
         <a href="{{ route('paypal.index') }}" class="nav-item {{ request()->routeIs('paypal.*') ? 'active' : '' }}">
             <span class="icon">💳</span> {{ __('Payments') }}
         </a>
-        @if(Auth::user()->currentCompany()?->hasToolAccess('invoice'))
-            <a href="{{ route('invoice.index') }}" class="nav-item {{ request()->routeIs('invoice.*') ? 'active' : '' }}">
-                <span class="icon">💶</span> {{ __('Invoices') }}
-            </a>
-        @endif
 
         <div class="nav-label" style="margin-top:16px;">{{ __('Import & Tools') }}</div>
         <a href="{{ route('import.index') }}" class="nav-item {{ request()->routeIs('import.*') ? 'active' : '' }}">

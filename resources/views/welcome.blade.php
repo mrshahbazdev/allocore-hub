@@ -428,59 +428,15 @@
         </div>
 
         <div class="tools-grid">
-            <!-- GmbH -->
-            <div class="tool-card t1 fade-up">
-                <div class="tool-icon">📊</div>
-                <div class="tool-title">{{ __('welcome.tools.gmbh.title') }}</div>
-                <div class="tool-desc">
-                    {{ __('welcome.tools.gmbh.desc') }}
-                </div>
-                <div class="tool-kpis">
-                    <span class="kpi-chip">EBITDA-Marge</span>
-                    <span class="kpi-chip">Umsatzwachstum</span>
-                    <span class="kpi-chip">Debt/Equity</span>
-                    <span class="kpi-chip">Current Ratio</span>
-                    <span class="kpi-chip">Runway</span>
-                    <span class="kpi-chip">LTV/CAC</span>
-                </div>
-                <div class="tool-footer">📅 {{ __('welcome.tools.gmbh.footer') }}</div>
-            </div>
-
-            <!-- Jahresabschluss -->
-            <div class="tool-card t2 fade-up">
-                <div class="tool-icon">📈</div>
-                <div class="tool-title">{{ __('welcome.tools.ja.title') }}</div>
-                <div class="tool-desc">
-                    {{ __('welcome.tools.ja.desc') }}
-                </div>
-                <div class="tool-kpis">
-                    <span class="kpi-chip">EK-Quote</span>
-                    <span class="kpi-chip">Quick Ratio</span>
-                    <span class="kpi-chip">ROE / ROA</span>
-                    <span class="kpi-chip">EBIT-Marge</span>
-                    <span class="kpi-chip">DSO / DPO</span>
-                    <span class="kpi-chip">Zinsdeckung</span>
-                </div>
-                <div class="tool-footer">📅 {{ __('welcome.tools.ja.footer') }}</div>
-            </div>
-
-            <!-- Immobilien -->
-            <div class="tool-card t3 fade-up">
-                <div class="tool-icon">🏘</div>
-                <div class="tool-title">{{ __('welcome.tools.imm.title') }}</div>
-                <div class="tool-desc">
-                    {{ __('welcome.tools.imm.desc') }}
-                </div>
-                <div class="tool-kpis">
-                    <span class="kpi-chip">NOI</span>
-                    <span class="kpi-chip">DSCR</span>
-                    <span class="kpi-chip">LTV</span>
-                    <span class="kpi-chip">Cashflow</span>
-                    <span class="kpi-chip">Nettorendite</span>
-                    <span class="kpi-chip">Mietmultiplikator</span>
-                </div>
-                <div class="tool-footer">📅 {{ __('welcome.tools.imm.footer') }}</div>
-            </div>
+            @foreach ($tools as $tool)
+                <a href="{{ route($tool->internal_route) }}" class="tool-card t{{ $loop->index % 3 + 1 }} fade-up" style="text-decoration: none;">
+                    <div class="tool-icon">{{ $tool->icon }}</div>
+                    <div class="tool-title">{{ __($tool->name) }}</div>
+                    <div class="tool-desc">
+                        {{ $tool->description }}
+                    </div>
+                </a>
+            @endforeach
         </div>
     </div>
 </section>

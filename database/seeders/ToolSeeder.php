@@ -16,7 +16,8 @@ class ToolSeeder extends Seeder
                 'description' => 'GmbH-Gründung und Unternehmensanalyse.',
                 'internal_route' => 'gmbh.index',
                 'namespace' => 'App\\Http\\Controllers\\GmbhAnalyseController',
-                'icon' => 'building-office',
+                'icon' => '📊',
+                'is_active' => true,
             ],
             [
                 'slug' => 'jahresabschluss',
@@ -24,7 +25,8 @@ class ToolSeeder extends Seeder
                 'description' => 'Jährliche Abschlussanalyse und KPIs.',
                 'internal_route' => 'jahresabschluss.index',
                 'namespace' => 'App\\Http\\Controllers\\JahresabschlussController',
-                'icon' => 'document-text',
+                'icon' => '📈',
+                'is_active' => true,
             ],
             [
                 'slug' => 'immobilien',
@@ -32,7 +34,8 @@ class ToolSeeder extends Seeder
                 'description' => 'Immobilienbewertung und Renditeanalyse.',
                 'internal_route' => 'immobilien.index',
                 'namespace' => 'App\\Http\\Controllers\\ImmobilienController',
-                'icon' => 'home',
+                'icon' => '🏘',
+                'is_active' => true,
             ],
             [
                 'slug' => 'audit',
@@ -40,7 +43,8 @@ class ToolSeeder extends Seeder
                 'description' => 'Unternehmens- und Prozess-Audits.',
                 'internal_route' => 'audit.index',
                 'namespace' => 'App\\Modules\\Audit',
-                'icon' => 'clipboard-document-check',
+                'icon' => '✅',
+                'is_active' => true,
             ],
             [
                 'slug' => 'invoice',
@@ -48,7 +52,8 @@ class ToolSeeder extends Seeder
                 'description' => 'Rechnungen, Kunden und Zahlungen verwalten.',
                 'internal_route' => 'invoice.index',
                 'namespace' => 'App\\Modules\\Invoice',
-                'icon' => 'banknotes',
+                'icon' => '💶',
+                'is_active' => true,
             ],
             [
                 'slug' => 'keyword-cluster',
@@ -56,12 +61,13 @@ class ToolSeeder extends Seeder
                 'description' => 'KI-basierte Keyword-Cluster und Content-Planung.',
                 'internal_route' => 'keyword-cluster.index',
                 'namespace' => 'App\\Modules\\KeywordCluster',
-                'icon' => 'globe-alt',
+                'icon' => '🔍',
+                'is_active' => true,
             ],
         ];
 
         foreach ($tools as $tool) {
-            Tool::firstOrCreate(['slug' => $tool['slug']], $tool);
+            Tool::updateOrCreate(['slug' => $tool['slug']], $tool);
         }
     }
 }
