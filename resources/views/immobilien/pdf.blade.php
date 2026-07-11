@@ -5,7 +5,7 @@
 <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: DejaVu Sans, sans-serif; font-size: 10.5px; color: #1e293b; background: #fff; }
-    .header { background: linear-gradient(135deg, #1e1b4b, #4c1d95); color: white; padding: 20px 28px; display: table; width: 100%; }
+    .header { background: #4c1d95; color: white; padding: 20px 28px; display: table; width: 100%; }
     .header-left { display: table-cell; vertical-align: middle; }
     .header-right { display: table-cell; vertical-align: middle; text-align: right; }
     .logo { font-size: 20px; font-weight: 700; }
