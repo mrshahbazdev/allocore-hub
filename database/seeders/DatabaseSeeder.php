@@ -2,29 +2,35 @@
 
 namespace Database\Seeders;
 
-use App\Models\Company;
 use App\Models\User;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        $company = Company::firstOrCreate(
-            ['slug' => 'demo-gmbh'],
-            ['name' => 'Demo GmbH']
-        );
+        // 1. Roles & Permissions
+        $this->call(RolesAndPermissionsSeeder::class);
 
-        User::firstOrCreate(
-            ['email' => 'owner@allocore.test'],
-            [
-                'company_id' => $company->id,
-                'role' => User::ROLE_OWNER,
-                'name' => 'Demo Owner',
-                'password' => Hash::make('password'),
-                'email_verified_at' => now(),
-            ]
+        // 2. KPI Thresholds
+        $this->call(KpiThresholdsSeeder::class);
+
+        // 3. Tools, Plans & Bundles
+        $this->call(ToolSeeder::class);
+        $this->call(PlanSeeder::class);
+
+        // 4. Demo Admin User
+        $admin = User::firstOrCreate(
+            ['email' => 'admin@allocore.de'],
+            User::factory()->raw(['name' => 'Admin User', 'email' => 'admin@allocore.de'])
         );
+        $admin->assignRole('Admin');
+
+        // 4. Demo Analyst User
+        $analyst = User::firstOrCreate(
+            ['email' => 'analyst@allocore.de'],
+            User::factory()->raw(['name' => 'Analyst User', 'email' => 'analyst@allocore.de'])
+        );
+        $analyst->assignRole('Analyst');
     }
 }

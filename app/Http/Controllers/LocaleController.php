@@ -2,17 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 class LocaleController extends Controller
 {
-    public function __invoke(Request $request, string $locale)
+    /**
+     * Switch the application locale.
+     */
+    public function switch(Request $request, string $locale): RedirectResponse
     {
-        if (! in_array($locale, ['de', 'en'])) {
-            abort(400);
+        if (! in_array($locale, config('app.available_locales', ['en', 'de']), true)) {
+            $locale = config('app.locale', 'en');
         }
 
-        session(['locale' => $locale]);
+        $request->session()->put('locale', $locale);
         app()->setLocale($locale);
 
         return redirect()->back();
