@@ -31,15 +31,14 @@
         /* Sidebar */
         .sidebar {
             position: fixed; top: 0; left: 0; height: 100vh; width: var(--sidebar-w);
-            background: linear-gradient(180deg, #1e1b4b 0%, #0f172a 100%);
+            background: #0f172a;
             border-right: 1px solid rgba(99,102,241,0.2);
             display: flex; flex-direction: column; z-index: 50;
         }
         .sidebar-logo { padding: 24px 20px 20px; border-bottom: 1px solid rgba(99,102,241,0.15); }
         .sidebar-logo h2 {
             font-size: 18px; font-weight: 700;
-            background: linear-gradient(135deg, #818cf8, #c084fc);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            color: #818cf8;
         }
         .sidebar-logo p { font-size: 11px; color: #64748b; margin-top: 2px; }
         .sidebar-nav { flex: 1; padding: 16px 12px; overflow-y: auto; }
@@ -57,7 +56,7 @@
         .user-card { display: flex; align-items: center; gap: 10px; padding: 10px;
             background: rgba(255,255,255,0.05); border-radius: 8px; }
         .user-avatar { width: 32px; height: 32px; border-radius: 50%;
-            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            background: #6366f1;
             display: flex; align-items: center; justify-content: center;
             font-size: 13px; font-weight: 600; color: white; flex-shrink: 0; }
         .user-name { font-size: 13px; font-weight: 500; color: #e2e8f0; }

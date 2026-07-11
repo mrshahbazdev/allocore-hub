@@ -9,7 +9,7 @@
 
     /* ─── Header ─── */
     .header {
-        background: linear-gradient(135deg, #1e1b4b, #312e81);
+        background: #312e81;
         color: white; padding: 18px 16px;
         display: table; width: 100%;
     }

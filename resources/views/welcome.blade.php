@@ -30,22 +30,7 @@
             overflow-x: hidden;
         }
 
-        /* ─── Noise texture overlay ──────────────────────── */
-        body::before {
-            content: '';
-            position: fixed; inset: 0; z-index: 0;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
-            pointer-events: none;
-        }
-
-        /* ─── Ambient background glows ───────────────────── */
-        .bg-glow {
-            position: fixed; border-radius: 50%;
-            filter: blur(120px); pointer-events: none; z-index: 0;
-        }
-        .glow-1 { width: 600px; height: 600px; top: -200px; left: -150px; background: rgba(99,102,241,0.15); }
-        .glow-2 { width: 500px; height: 500px; top: 30%; right: -150px; background: rgba(139,92,246,0.1); }
-        .glow-3 { width: 400px; height: 400px; bottom: 10%; left: 30%; background: rgba(16,185,129,0.07); }
+        /* Clean flat UI — no noise or glows */
 
         /* ─── Shared wrapper ─────────────────────────────── */
         .wrap { position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; padding: 0 32px; }
@@ -62,8 +47,7 @@
         }
         .nav-logo {
             font-size: 20px; font-weight: 800; text-decoration: none;
-            background: linear-gradient(135deg, #818cf8, #c084fc);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            color: #818cf8;
             letter-spacing: -0.5px;
         }
         .nav-logo span { font-weight: 300; opacity: .6; }
@@ -103,8 +87,7 @@
             letter-spacing: -2px; color: #f1f5f9; margin-bottom: 24px;
         }
         .hero h1 .grad {
-            background: linear-gradient(135deg, #818cf8 0%, #c084fc 50%, #f0abfc 100%);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            color: #818cf8;
         }
         .hero-sub {
             font-size: 18px; color: #64748b; line-height: 1.7; max-width: 560px;
@@ -188,14 +171,7 @@
             border-radius: 16px; padding: 28px; transition: all .25s; cursor: default;
             position: relative; overflow: hidden;
         }
-        .tool-card::before {
-            content: ''; position: absolute; inset: 0; border-radius: 16px;
-            opacity: 0; transition: opacity .3s;
-        }
-        .tool-card.t1::before { background: radial-gradient(circle at top left, rgba(99,102,241,0.1), transparent 60%); }
-        .tool-card.t2::before { background: radial-gradient(circle at top left, rgba(245,158,11,0.08), transparent 60%); }
-        .tool-card.t3::before { background: radial-gradient(circle at top left, rgba(139,92,246,0.1), transparent 60%); }
-        .tool-card:hover::before { opacity: 1; }
+        .tool-card::before { display: none; }
         .tool-card:hover { transform: translateY(-4px); border-color: rgba(99,102,241,0.3); box-shadow: 0 20px 60px rgba(0,0,0,.4); }
 
         .tool-icon {
@@ -233,7 +209,7 @@
         .steps::before {
             content: '';
             position: absolute; left: 23px; top: 0; bottom: 0; width: 1px;
-            background: linear-gradient(to bottom, transparent, rgba(99,102,241,0.3), transparent);
+            background: rgba(99,102,241,0.3);
         }
         .step { display: flex; gap: 24px; align-items: flex-start; padding: 28px 0; }
         .step-num {
@@ -251,15 +227,11 @@
         .cta-section {
             margin: 0 0 100px;
             padding: 64px; border-radius: 24px;
-            background: linear-gradient(135deg, rgba(99,102,241,0.12) 0%, rgba(139,92,246,0.1) 100%);
+            background: rgba(99,102,241,0.08);
             border: 1px solid rgba(99,102,241,0.2);
             text-align: center; position: relative; overflow: hidden;
         }
-        .cta-section::before {
-            content: ''; position: absolute; top: -80px; left: 50%; transform: translateX(-50%);
-            width: 400px; height: 300px; border-radius: 50%;
-            background: rgba(99,102,241,0.12); filter: blur(60px); pointer-events: none;
-        }
+        .cta-section::before { display: none; }
         .cta-section h2 { font-size: 40px; font-weight: 800; color: #f1f5f9; margin-bottom: 12px; letter-spacing: -1px; }
         .cta-section p { font-size: 16px; color: #64748b; margin-bottom: 36px; }
         .cta-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
@@ -282,7 +254,7 @@
 
         /* ─── Divider ─────────────────────────────────────── */
         .divider {
-            height: 1px; background: linear-gradient(to right, transparent, rgba(99,102,241,0.2), transparent);
+            height: 1px; background: rgba(99,102,241,0.2);
             margin: 0;
         }
 
@@ -309,11 +281,6 @@
     </style>
 </head>
 <body>
-
-<!-- Background glows -->
-<div class="bg-glow glow-1"></div>
-<div class="bg-glow glow-2"></div>
-<div class="bg-glow glow-3"></div>
 
 <!-- ──────────────── NAV ──────────────── -->
 <nav>
@@ -404,7 +371,7 @@
                     <div class="preview-score-num">78.5</div>
                     <div class="preview-score-label">/100 Punkte · ✅ Finanzierung empfohlen</div>
                     <div style="margin: 12px 24px 0; height: 6px; background: rgba(255,255,255,0.06); border-radius: 3px; overflow:hidden;">
-                        <div style="height:100%; width:78.5%; background: linear-gradient(90deg, #10b981, #34d399); border-radius:3px;"></div>
+                        <div style="height:100%; width:78.5%; background: #10b981; border-radius:3px;"></div>
                     </div>
                 </div>
 

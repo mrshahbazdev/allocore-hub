@@ -14,15 +14,14 @@
 
         .sidebar {
             position: fixed; top: 0; left: 0; height: 100vh; width: var(--sidebar-w);
-            background: linear-gradient(180deg, #1a0a0a 0%, #0a0e1a 100%);
+            background: #0a0e1a;
             border-right: 1px solid rgba(220,38,38,0.2);
             display: flex; flex-direction: column; z-index: 50;
         }
         .sidebar-logo { padding: 22px 18px 18px; border-bottom: 1px solid rgba(220,38,38,0.12); }
         .sidebar-logo h2 {
             font-size: 16px; font-weight: 700;
-            background: linear-gradient(135deg, #f87171, #fb923c);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            color: #f87171;
         }
         .sidebar-logo p { font-size: 10px; color: #64748b; margin-top: 2px; }
         .sidebar-nav { flex: 1; padding: 14px 10px; overflow-y: auto; }

@@ -16,9 +16,7 @@
 
         <style>
             body {
-                background: radial-gradient(circle at 120% 0%, rgba(99,102,241,0.18) 0%, transparent 40%),
-                            radial-gradient(circle at -10% 100%, rgba(139,92,246,0.12) 0%, transparent 40%),
-                            #0b1021;
+                background: #0b1021;
                 color: #e2e8f0;
                 font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
             }
