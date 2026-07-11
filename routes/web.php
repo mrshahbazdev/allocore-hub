@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\AuditController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ExcelImportController;
@@ -11,6 +12,11 @@ use App\Http\Controllers\LeadController;
 use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\PaypalController;
 use App\Http\Controllers\ProfileController;
+use App\Livewire\AuditAssessment;
+use App\Livewire\AuditCompare;
+use App\Livewire\AuditList;
+use App\Livewire\AuditTemplateBuilder;
+use App\Livewire\AuditTemplates;
 use App\Models\Analysis;
 use Illuminate\Support\Facades\Route;
 
@@ -71,6 +77,19 @@ Route::middleware(['auth', 'verified', 'company'])->group(function () {
         Route::get('/immobilien/{immobilien}', [ImmobilienController::class, 'show'])->name('immobilien.show');
         Route::delete('/immobilien/{immobilien}', [ImmobilienController::class, 'destroy'])->name('immobilien.destroy');
         Route::get('/immobilien/{immobilien}/pdf', [ImmobilienController::class, 'exportPdf'])->name('immobilien.pdf');
+    });
+
+    // Audit
+    Route::middleware('tool.access:audit')->prefix('audit')->name('audit.')->group(function () {
+        Route::get('/', AuditList::class)->name('index');
+        Route::get('/compare', AuditCompare::class)->name('compare');
+        Route::get('/templates', AuditTemplates::class)->name('templates');
+        Route::get('/templates/{template}/builder', AuditTemplateBuilder::class)->name('templates.builder');
+        Route::post('/start', [AuditController::class, 'start'])->name('start');
+        Route::get('/{audit}/assessment', AuditAssessment::class)->name('assessment');
+        Route::get('/{audit}/results', [AuditController::class, 'results'])->name('results');
+        Route::get('/{audit}/report', [AuditController::class, 'report'])->name('report');
+        Route::delete('/{audit}', [AuditController::class, 'destroy'])->name('destroy');
     });
 
     // Analyses History (all tools)
